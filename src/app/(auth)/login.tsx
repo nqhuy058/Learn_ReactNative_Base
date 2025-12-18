@@ -3,7 +3,7 @@ import ShareInput from "../../components/input/share.input";
 import { APP_COLOR } from "../../utils/constant";
 import { LoginSchema } from "../../utils/validate.chema";
 import { Formik } from "formik";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -15,6 +15,7 @@ import {
     ScrollView,
     StyleSheet,
     Text,
+    TextInput,
     TouchableWithoutFeedback,
     View
 } from "react-native";
@@ -28,11 +29,13 @@ const LoginPage = () => {
 
     const { user } = useAppContext();
 
+    const passwordRef = useRef<TextInput>(null);
+
     const handleLogin = async (values: { email: string, password: string }) => {
         setLoading(true);
         const { email, password } = values;
 
-        await new Promise(resolve => setTimeout(() => resolve(true), 1000));
+        await new Promise(resolve => setTimeout(() => resolve(true), 2000));
 
         try {
             // Kiểm tra thông tin đăng nhập
@@ -85,9 +88,16 @@ const LoginPage = () => {
                                                 value={values.email}
                                                 error={errors.email}
                                                 touched={touched.email}
+                                                editable={!loading}
+                                                returnKeyType="next"
+                                                onSubmitEditing={() => {
+                                                    passwordRef.current?.focus();
+                                                }}
+                                                blurOnSubmit={false} // Giữ bàn phím hiện
                                             />
 
                                             <ShareInput
+                                                ref={passwordRef}
                                                 placeholder="Mật khẩu"
                                                 secureTextEntry={true}
                                                 onChangeText={handleChange('password')}
@@ -95,6 +105,9 @@ const LoginPage = () => {
                                                 value={values.password}
                                                 error={errors.password}
                                                 touched={touched.password}
+                                                editable={!loading}
+                                                returnKeyType="done"
+                                                onSubmitEditing={handleSubmit as any} // Enter cuối cùng thì Submit form luôn
                                             />
 
                                             <ShareButton
@@ -113,13 +126,18 @@ const LoginPage = () => {
                                                     marginTop: 8
                                                 }}
                                             />
-                                            <Text style={styles.forgotPassword} onPress={() => navigation.navigate('requestPassword')}>
+                                            <Text
+                                                style={styles.forgotPassword}
+                                                onPress={() => !loading && navigation.navigate('requestPassword')}
+                                            >
                                                 Quên mật khẩu?
                                             </Text>
                                         </View>
 
                                         <View style={styles.bottomSection}>
-                                            <Pressable style={styles.createAccountButton} onPress={() => navigation.navigate('signup')}>
+                                            <Pressable
+                                                style={styles.createAccountButton}
+                                                onPress={() => !loading && navigation.navigate('signup')}>
                                                 <Text style={styles.createAccountText}>Create new account</Text>
                                             </Pressable>
                                         </View>

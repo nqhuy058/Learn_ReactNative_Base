@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   StyleSheet, View, Text, Pressable, ScrollView, Alert, Modal, Image, Switch,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,7 +16,7 @@ import Toast from 'react-native-toast-message';
 import { useTheme, ThemeColors } from '../../components/theme/themeContext';
 
 const ProfileScreen = ({ navigation }: any) => {
-  const { user, updateUser, clearUser } = useAppContext();
+  const { user, updateUser } = useAppContext();
 
   const { theme, toggleTheme, colors } = useTheme();
 
@@ -29,6 +30,8 @@ const ProfileScreen = ({ navigation }: any) => {
     lastName: user?.lastName || '',
     email: user?.email || '',
   });
+
+  const nameRef = useRef<TextInput>(null);
 
   const handleSaveProfile = () => {
     if (!editedUser.firstName.trim() || !editedUser.lastName.trim()) {
@@ -168,14 +171,22 @@ const ProfileScreen = ({ navigation }: any) => {
                   setEditedUser({ ...editedUser, firstName: text })
                 }
                 style={styles.input}
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  nameRef.current?.focus();
+                }}
+                blurOnSubmit={false}
               />
               <ShareInput
+                ref={nameRef}
                 title="Tên"
                 value={editedUser.lastName}
                 onChangeText={(text: string) =>
                   setEditedUser({ ...editedUser, lastName: text })
                 }
                 style={styles.input}
+                returnKeyType="done"
+                onSubmitEditing={handleSaveProfile}
               />
               <ShareInput
                 title="Ngày sinh"

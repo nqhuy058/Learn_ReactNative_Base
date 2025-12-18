@@ -4,10 +4,10 @@ import { APP_COLOR } from "../../utils/constant";
 import { SignUpSchema } from "../../utils/validate.chema";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Formik } from 'formik';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,6 +18,11 @@ const SignUpModal = () => {
     const navigation = useNavigation<NativeStackNavigationProp<any>>();
     const [isDatePickerVisible, setDatePickerVisible] = useState(false);
     const { setUser } = useAppContext();
+
+    const nameRef = useRef<TextInput>(null);
+    const emailRef = useRef<TextInput>(null);
+    const passwordRef = useRef<TextInput>(null);
+    const confirmPasswordRef = useRef<TextInput>(null);
 
     const handleSignUp = async (values: any) => {
         setLoading(true);
@@ -53,7 +58,7 @@ const SignUpModal = () => {
                 text1: 'Đã có lỗi xảy ra',
                 text2: error?.message ?? 'Vui lòng thử lại.'
             });
-        } 
+        }
     };
 
     return (
@@ -96,17 +101,30 @@ const SignUpModal = () => {
                                                 value={values.firstName}
                                                 error={errors.firstName}
                                                 touched={touched.firstName}
+                                                editable={!loading}
+                                                returnKeyType="next"
+                                                onSubmitEditing={() => {
+                                                    nameRef.current?.focus();
+                                                }}
+                                                blurOnSubmit={false}
                                             />
                                         </View>
 
                                         <View style={{ flex: 1 }}>
                                             <ShareInput
+                                                ref={nameRef}
                                                 placeholder="Tên"
                                                 onChangeText={handleChange('lastName')}
                                                 onBlur={handleBlur('lastName')}
                                                 value={values.lastName}
                                                 error={errors.lastName}
                                                 touched={touched.lastName}
+                                                editable={!loading}
+                                                returnKeyType="next"
+                                                onSubmitEditing={() => {
+                                                    emailRef.current?.focus();
+                                                }}
+                                                blurOnSubmit={false}
                                             />
                                         </View>
                                     </View>
@@ -142,6 +160,7 @@ const SignUpModal = () => {
                                     )}
 
                                     <ShareInput
+                                        ref={emailRef}
                                         placeholder="Email"
                                         keyboardType="email-address"
                                         onChangeText={handleChange('email')}
@@ -149,9 +168,16 @@ const SignUpModal = () => {
                                         value={values.email}
                                         error={errors.email}
                                         touched={touched.email}
+                                        editable={!loading}
+                                        returnKeyType="next"
+                                        onSubmitEditing={() => {
+                                            passwordRef.current?.focus();
+                                        }}
+                                        blurOnSubmit={false}
                                     />
 
                                     <ShareInput
+                                        ref={passwordRef}
                                         placeholder="Mật khẩu"
                                         secureTextEntry
                                         onChangeText={handleChange('password')}
@@ -159,9 +185,16 @@ const SignUpModal = () => {
                                         value={values.password}
                                         error={errors.password}
                                         touched={touched.password}
+                                        editable={!loading}
+                                        returnKeyType="next"
+                                        onSubmitEditing={() => {
+                                            confirmPasswordRef.current?.focus();
+                                        }}
+                                        blurOnSubmit={false}
                                     />
 
                                     <ShareInput
+                                        ref={confirmPasswordRef}
                                         placeholder="Xác nhận mật khẩu"
                                         secureTextEntry
                                         onChangeText={handleChange('confirmPassword')}
@@ -169,6 +202,9 @@ const SignUpModal = () => {
                                         value={values.confirmPassword}
                                         error={errors.confirmPassword}
                                         touched={touched.confirmPassword}
+                                        editable={!loading}
+                                        returnKeyType="done"
+                                        onSubmitEditing={handleSubmit as any}
                                     />
 
                                     <ShareButton

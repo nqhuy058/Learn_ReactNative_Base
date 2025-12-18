@@ -1,7 +1,7 @@
 import { APP_COLOR } from '../../utils/constant';
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
-import { useState } from "react";
-import { KeyboardTypeOptions, Platform, StyleProp, StyleSheet, Text, TextInput, View, ViewStyle } from "react-native";
+import { forwardRef, useState } from "react";
+import { KeyboardTypeOptions, Platform, ReturnKeyTypeOptions, StyleProp, StyleSheet, Text, TextInput, View, ViewStyle } from "react-native";
 
 const styles = StyleSheet.create({
     inputGroup: {
@@ -57,15 +57,19 @@ interface IProps {
     multiline?: boolean;
     numberOfLines?: number;
     style?: StyleProp<ViewStyle>;
+    returnKeyType?: ReturnKeyTypeOptions; // 'next', 'done', 'go', ...
+    onSubmitEditing?: () => void;         // Hàm chạy khi bấm nút enter trên phím
+    blurOnSubmit?: boolean;               // Có ẩn bàn phím khi submit không?
 }
 
-const ShareInput = (props: IProps) => {
+const ShareInput = forwardRef<TextInput, IProps>((props, ref) => {
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [isShowPassword, setIsShowPassword] = useState<boolean>(false);
     const { title, keyboardType, secureTextEntry = false,
         value, setValue, onChangeText, onBlur,
         error, touched, editable = true, placeholder = "",
-        multiline = false, numberOfLines
+        multiline = false, numberOfLines, returnKeyType,
+        onSubmitEditing, blurOnSubmit
     } = props;
 
     return (
@@ -75,6 +79,7 @@ const ShareInput = (props: IProps) => {
             </Text>}
             <View style={styles.inputContainer}>
                 <TextInput
+                    ref={ref}
                     editable={editable}
                     value={value}
                     onChangeText={onChangeText}
@@ -95,6 +100,9 @@ const ShareInput = (props: IProps) => {
                     secureTextEntry={secureTextEntry && !isShowPassword}
                     multiline={multiline}
                     numberOfLines={numberOfLines}
+                    returnKeyType={returnKeyType}
+                    onSubmitEditing={onSubmitEditing}
+                    blurOnSubmit={blurOnSubmit}
                 />
                 {secureTextEntry &&
                     <FontAwesome
@@ -109,6 +117,6 @@ const ShareInput = (props: IProps) => {
             {error && touched && <Text style={styles.errorText}>{error}</Text>}
         </View>
     )
-}
+});
 
 export default ShareInput;
