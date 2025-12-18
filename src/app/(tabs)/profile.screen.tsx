@@ -1,13 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-  Alert,
-  Modal,
-  Image,
+  StyleSheet, View, Text, Pressable, ScrollView, Alert, Modal, Image, Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -19,11 +12,16 @@ import ShareInput from '../../components/input/share.input';
 import UserAvatar from '../../components/avatar/user.avatar';
 import InforCard from '../../components/card/infor.card';
 import Toast from 'react-native-toast-message';
-import { useTheme } from '../../theme/themeContext';
+import { useTheme, ThemeColors } from '../../components/theme/themeContext';
 
 const ProfileScreen = ({ navigation }: any) => {
   const { user, updateUser, clearUser } = useAppContext();
+
   const { theme, toggleTheme, colors } = useTheme();
+
+
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [isAvatarModalVisible, setAvatarModalVisible] = useState(false);
   const [editedUser, setEditedUser] = useState({
@@ -57,27 +55,19 @@ const ProfileScreen = ({ navigation }: any) => {
     const options = {
       mediaType: 'photo',
       includeBase64: true,
-      maxHeight: 200,
-      maxWidth: 200,
+      maxHeight: 500,
+      maxWidth: 500,
     };
 
     launchCamera(options as any, (response: any) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        Toast.show({
-          type: 'error',
-          text1: 'Lỗi',
-          text2: response.error,
-        });
+      if (response.didCancel) return;
+      if (response.error) {
+        Toast.show({ type: 'error', text1: 'Lỗi', text2: response.error });
       } else {
         const base64 = `data:image/jpeg;base64,${response.assets[0].base64}`;
         updateUser({ avatar: base64 });
         setAvatarModalVisible(false);
-        Toast.show({
-          type: 'success',
-          text1: 'Cập nhật ảnh đại diện thành công',
-        });
+        Toast.show({ type: 'success', text1: 'Cập nhật ảnh thành công' });
       }
     });
   };
@@ -86,42 +76,31 @@ const ProfileScreen = ({ navigation }: any) => {
     const options = {
       mediaType: 'photo',
       includeBase64: true,
-      maxHeight: 200,
-      maxWidth: 200,
+      maxHeight: 500,
+      maxWidth: 500,
     };
 
     launchImageLibrary(options as any, (response: any) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        Toast.show({
-          type: 'error',
-          text1: 'Lỗi',
-          text2: response.error,
-        });
+      if (response.didCancel) return;
+      if (response.error) {
+        Toast.show({ type: 'error', text1: 'Lỗi', text2: response.error });
       } else {
         const base64 = `data:image/jpeg;base64,${response.assets[0].base64}`;
         updateUser({ avatar: base64 });
         setAvatarModalVisible(false);
-        Toast.show({
-          type: 'success',
-          text1: 'Cập nhật ảnh đại diện thành công',
-        });
+        Toast.show({ type: 'success', text1: 'Cập nhật ảnh thành công' });
       }
     });
   };
 
   const handleLogout = () => {
     Alert.alert('Đăng xuất', 'Bạn có chắc chắn muốn đăng xuất?', [
-      { text: 'Hủy', onPress: () => { } },
+      { text: 'Hủy', style: 'cancel' },
       {
         text: 'Đồng ý',
         onPress: () => {
           navigation.replace('login');
-          Toast.show({
-            type: 'success',
-            text1: 'Đã đăng xuất',
-          });
+          Toast.show({ type: 'success', text1: 'Đã đăng xuất' });
         },
       },
     ]);
@@ -137,7 +116,6 @@ const ProfileScreen = ({ navigation }: any) => {
     );
   }
 
-  // Kiểm tra nếu avatar là base64 thì dùng Image, nếu không thì dùng text
   const isBase64Avatar = user.avatar?.startsWith('data:image');
 
   return (
@@ -145,8 +123,7 @@ const ProfileScreen = ({ navigation }: any) => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Profile</Text>
-          <View style={{ width: 24 }} />
+          <Text style={styles.headerTitle}>Hồ sơ cá nhân</Text>
         </View>
 
         {/* Avatar Section */}
@@ -190,6 +167,7 @@ const ProfileScreen = ({ navigation }: any) => {
                 onChangeText={(text: string) =>
                   setEditedUser({ ...editedUser, firstName: text })
                 }
+                style={styles.input}
               />
               <ShareInput
                 title="Tên"
@@ -197,16 +175,19 @@ const ProfileScreen = ({ navigation }: any) => {
                 onChangeText={(text: string) =>
                   setEditedUser({ ...editedUser, lastName: text })
                 }
+                style={styles.input}
               />
               <ShareInput
                 title="Ngày sinh"
                 value={user.dob}
                 editable={false}
+                style={styles.inputDisabled}
               />
               <ShareInput
                 title="Email"
                 value={editedUser.email}
                 editable={false}
+                style={styles.inputDisabled}
               />
               <View style={styles.buttonGroup}>
                 <ShareButton
@@ -226,7 +207,7 @@ const ProfileScreen = ({ navigation }: any) => {
           ) : (
             <>
               <View style={styles.userNameSection}>
-                <View>
+                <View style={{ alignItems: 'center' }}>
                   <Text style={styles.userName}>
                     {user.firstName} {user.lastName}
                   </Text>
@@ -251,12 +232,18 @@ const ProfileScreen = ({ navigation }: any) => {
                   }}
                 />
 
-                <InforCard
-                  icon="moon-waning-crescent"
-                  label="Chế độ tối"
-                  status={theme === 'light' ? 'Tắt' : 'Bật'}
-                  onPress={toggleTheme}
-                />
+                <View style={styles.themeRow}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <MaterialIcons name="theme-light-dark" size={24} color={colors.text} style={{ marginRight: 15 }} />
+                    <Text style={{ fontSize: 16, color: colors.text }}>Giao diện tối</Text>
+                  </View>
+                  <Switch
+                    value={theme === 'dark'}
+                    onValueChange={toggleTheme}
+                    trackColor={{ false: '#767577', true: APP_COLOR.BLUE_LIGHT }}
+                    thumbColor={'#f4f3f4'}
+                  />
+                </View>
               </View>
 
               {/* Logout Button */}
@@ -311,10 +298,11 @@ const ProfileScreen = ({ navigation }: any) => {
   );
 };
 
-const styles = StyleSheet.create({
+
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: APP_COLOR.WHITE,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -326,22 +314,23 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: APP_COLOR.GREY,
+    color: colors.subText,
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     fontSize: 25,
     fontWeight: 'bold',
-    color: APP_COLOR.BLACK,
+    color: colors.text,
     textAlign: 'center',
+    flex: 1,
   },
   avatarSection: {
     alignItems: 'center',
@@ -366,7 +355,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: APP_COLOR.WHITE,
+    borderColor: colors.background,
   },
   userInfoSection: {
     paddingHorizontal: 16,
@@ -376,7 +365,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 16,
-    color: APP_COLOR.BLACK,
+    color: colors.text,
     alignSelf: 'center',
   },
   userNameSection: {
@@ -388,19 +377,30 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: APP_COLOR.BLACK,
+    color: colors.text,
     marginBottom: 4,
   },
   userEmail: {
     fontSize: 14,
-    color: APP_COLOR.GREY,
+    color: colors.subText,
   },
   menuSection: {
     marginBottom: 24,
     borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#f0f0f0',
+    borderColor: colors.border,
+    backgroundColor: colors.card,
+  },
+  // Style riêng cho dòng Switch theme
+  themeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    backgroundColor: colors.card,
   },
   buttonGroup: {
     flexDirection: 'row',
@@ -418,7 +418,9 @@ const styles = StyleSheet.create({
     backgroundColor: APP_COLOR.BLUE_LIGHT,
   },
   cancelButton: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.card, // Nút hủy màu xám động
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   buttonText: {
     fontSize: 14,
@@ -426,20 +428,23 @@ const styles = StyleSheet.create({
     color: APP_COLOR.WHITE,
   },
   cancelButtonText: {
-    color: APP_COLOR.BLACK,
+    color: colors.text, // Chữ nút hủy động
   },
   logoutButton: {
-    backgroundColor: APP_COLOR.BLUE_LIGHT,
+    backgroundColor: 'transparent',
     borderRadius: 15,
     paddingVertical: 12,
     marginBottom: 24,
     width: '70%',
     alignSelf: 'center',
+    borderWidth: 1,
+    borderColor: APP_COLOR.BLUE_LIGHT,
   },
   logoutButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: APP_COLOR.WHITE,
+    color: APP_COLOR.BLUE_LIGHT,
+    textAlign: 'center',
   },
   modalBackdrop: {
     flex: 1,
@@ -447,7 +452,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: APP_COLOR.WHITE,
+    backgroundColor: colors.background, // Modal nền động
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingHorizontal: 16,
@@ -459,7 +464,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: APP_COLOR.BLACK,
+    color: colors.text,
   },
   modalButtonGroup: {
     gap: 12,
@@ -475,15 +480,28 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: APP_COLOR.WHITE,
   },
-
   modalBtnTextClose: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: APP_COLOR.BLACK,
+    color: colors.text,
   },
   closeBtn: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
+  // Styles cho input khi truyền vào ShareInput
+  input: {
+    backgroundColor: colors.card,
+    color: colors.text,
+    borderColor: colors.border,
+  },
+  inputDisabled: {
+    backgroundColor: colors.card,
+    color: colors.subText,
+    borderColor: colors.border,
+    opacity: 0.7,
+  }
 });
 
 export default ProfileScreen;

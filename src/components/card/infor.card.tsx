@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Pressable, StyleProp, ViewStyle } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { APP_COLOR } from '../../utils/constant';
 
@@ -9,6 +9,7 @@ interface InforCardProps {
     status?: string;
     onPress?: () => void;
     showChevron?: boolean;
+    style?: StyleProp<ViewStyle>;
 }
 
 const InforCard = ({

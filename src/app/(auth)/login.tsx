@@ -2,7 +2,6 @@ import ShareButton from "../../components/button/share.button";
 import ShareInput from "../../components/input/share.input";
 import { APP_COLOR } from "../../utils/constant";
 import { LoginSchema } from "../../utils/validate.chema";
-import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Formik } from "formik";
 import { useState } from "react";
 import { useNavigation } from '@react-navigation/native';

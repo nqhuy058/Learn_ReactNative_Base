@@ -5,14 +5,17 @@ import { SignUpSchema } from "../../utils/validate.chema";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Formik } from 'formik';
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAppContext } from "../../context/app.context";
 
-const SignUpModal = ({ navigation }: any) => {
+const SignUpModal = () => {
     const [loading, setLoading] = useState(false);
+    const navigation = useNavigation<NativeStackNavigationProp<any>>();
     const [isDatePickerVisible, setDatePickerVisible] = useState(false);
     const { setUser } = useAppContext();
 
@@ -40,10 +43,9 @@ const SignUpModal = ({ navigation }: any) => {
             });
 
             setTimeout(() => {
-                if (navigation) {
-                    navigation.goBack();
-                }
-            }, 2000);
+                setLoading(false);
+                navigation.goBack();
+            }, 1000);
 
         } catch (error: any) {
             Toast.show({
@@ -51,9 +53,7 @@ const SignUpModal = ({ navigation }: any) => {
                 text1: 'Đã có lỗi xảy ra',
                 text2: error?.message ?? 'Vui lòng thử lại.'
             });
-        } finally {
-            setLoading(false);
-        }
+        } 
     };
 
     return (

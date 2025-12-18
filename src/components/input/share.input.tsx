@@ -1,7 +1,7 @@
 import { APP_COLOR } from '../../utils/constant';
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
 import { useState } from "react";
-import { KeyboardTypeOptions, Platform, StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardTypeOptions, Platform, StyleProp, StyleSheet, Text, TextInput, View, ViewStyle } from "react-native";
 
 const styles = StyleSheet.create({
     inputGroup: {
@@ -56,6 +56,7 @@ interface IProps {
     placeholder?: string;
     multiline?: boolean;
     numberOfLines?: number;
+    style?: StyleProp<ViewStyle>;
 }
 
 const ShareInput = (props: IProps) => {
