@@ -7,7 +7,9 @@ import { AppProvider } from '../context/app.context';
 import { ThemeProvider } from '../theme/themeContext';
 import LoginPage from './\(auth\)/login';
 import SignUpModal from './\(auth\)/signup.modal';
-import ProfileScreen from './screen/profile.screen';
+import RequestPasswordModal from './(auth)/request.password.modal';
+import TabNavigator from './(tabs)/_layout';
+import ForgotPasswordModal from './(auth)/forgot.password.modal';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,10 +40,26 @@ const RootLayout = () => {
                                 }}
                             />
                             <Stack.Screen
-                                name="profile"
-                                component={ProfileScreen}
+                                name="(tabs)"
+                                component={TabNavigator}
                                 options={{
                                     headerShown: false,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="requestPassword"
+                                component={RequestPasswordModal}
+                                options={{
+                                    headerShown: false,
+                                    presentation: "transparentModal",
+                                }}
+                            />
+                            <Stack.Screen
+                                name="forgotPassword"
+                                component={ForgotPasswordModal}
+                                options={{
+                                    headerShown: false,
+                                    presentation: "transparentModal",
                                 }}
                             />
                         </Stack.Navigator>

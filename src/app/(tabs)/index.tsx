@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const EditScreen = () => {
+const HomePage = () => {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Edit Profile Screen</Text>
-            {/* Nơi đây sẽ là form chỉnh sửa profile */}
+            <Text style={styles.title}>Home Page</Text>
+      
         </View>
     );
 };
@@ -24,4 +24,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EditScreen;
+export default HomePage;

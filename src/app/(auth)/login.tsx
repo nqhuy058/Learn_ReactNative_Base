@@ -37,13 +37,9 @@ const LoginPage = () => {
 
         try {
             // Kiểm tra thông tin đăng nhập
-            if (email === 'huy@gmail.com' && password === '123456') {
+            if (user && user.email === email && user.password === password) {
                 Toast.show({ type: 'success', text1: 'Đăng nhập thành công!' });
-                navigation.replace('profile');
-            }
-            else if (user && user.email === email && user.password === password) {
-                Toast.show({ type: 'success', text1: 'Đăng nhập thành công!' });
-                navigation.replace('profile');
+                navigation.replace('(tabs)');
             } else {
                 Toast.show({
                     type: 'error',
@@ -72,7 +68,6 @@ const LoginPage = () => {
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                         <View style={styles.container}>
                             <View style={styles.logoContainer}>
-                                <MaterialIcons name="message" size={100} color="white" />
                             </View>
 
                             <Formik
@@ -119,13 +114,13 @@ const LoginPage = () => {
                                                     marginTop: 8
                                                 }}
                                             />
-                                            <Text style={styles.forgotPassword} onPress={() => Alert.alert("Thông báo", "Chức năng quên mật khẩu chưa được hỗ trợ.")}>
+                                            <Text style={styles.forgotPassword} onPress={() => navigation.navigate('requestPassword')}>
                                                 Quên mật khẩu?
                                             </Text>
                                         </View>
 
                                         <View style={styles.bottomSection}>
-                                            <Pressable style={styles.createAccountButton} onPress={() => navigation.navigate('signup' as never)}>
+                                            <Pressable style={styles.createAccountButton} onPress={() => navigation.navigate('signup')}>
                                                 <Text style={styles.createAccountText}>Create new account</Text>
                                             </Pressable>
                                         </View>

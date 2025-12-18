@@ -117,7 +117,6 @@ const ProfileScreen = ({ navigation }: any) => {
       {
         text: 'Đồng ý',
         onPress: () => {
-          clearUser();
           navigation.replace('login');
           Toast.show({
             type: 'success',

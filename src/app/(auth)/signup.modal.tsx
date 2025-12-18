@@ -43,7 +43,7 @@ const SignUpModal = ({ navigation }: any) => {
                 if (navigation) {
                     navigation.goBack();
                 }
-            }, 1000);
+            }, 2000);
 
         } catch (error: any) {
             Toast.show({
