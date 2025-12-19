@@ -6,3 +6,4 @@ export const APP_COLOR = {
     BLUE_LIGHT: '#1877F2',
     BORDER: '#CED0D4', 
 }
+
