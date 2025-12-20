@@ -3,45 +3,6 @@ import { FontAwesome } from '@react-native-vector-icons/fontawesome';
 import { forwardRef, useState } from "react";
 import { KeyboardTypeOptions, Platform, ReturnKeyTypeOptions, StyleProp, StyleSheet, Text, TextInput, View, ViewStyle } from "react-native";
 
-const styles = StyleSheet.create({
-    inputGroup: {
-        marginBottom: 12,
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: APP_COLOR.GREY,
-        marginBottom: 8,
-    },
-    inputContainer: {
-        position: "relative",
-        justifyContent: 'center',
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        paddingHorizontal: 15,
-        paddingVertical: 15,
-        borderRadius: 15,
-        backgroundColor: APP_COLOR.WHITE,
-        fontSize: 16,
-        color: APP_COLOR.BLACK,
-    },
-    inputFocused: {
-        borderColor: APP_COLOR.BLACK,
-        backgroundColor: APP_COLOR.WHITE,
-    },
-    eye: {
-        position: 'absolute',
-        right: 15,
-    },
-    errorText: {
-        color: 'red',
-        fontSize: 12,
-        marginTop: 5,
-    }
-})
-
 interface IProps {
     title?: string;
     keyboardType?: KeyboardTypeOptions;
@@ -60,6 +21,7 @@ interface IProps {
     returnKeyType?: ReturnKeyTypeOptions; // 'next', 'done', 'go', ...
     onSubmitEditing?: () => void;         // Hàm chạy khi bấm nút enter trên phím
     blurOnSubmit?: boolean;               // Có ẩn bàn phím khi submit không?
+    textColor?: string;
 }
 
 const ShareInput = forwardRef<TextInput, IProps>((props, ref) => {
@@ -69,14 +31,19 @@ const ShareInput = forwardRef<TextInput, IProps>((props, ref) => {
         value, setValue, onChangeText, onBlur,
         error, touched, editable = true, placeholder = "",
         multiline = false, numberOfLines, returnKeyType,
-        onSubmitEditing, blurOnSubmit
+        onSubmitEditing, blurOnSubmit, textColor = APP_COLOR.BLACK,
     } = props;
 
     return (
         <View style={styles.inputGroup}>
-            {title && <Text style={styles.label}>
-                {title}
-            </Text>}
+            {title && (
+                <Text style={[
+                    styles.label,
+                    { color: textColor }
+                ]}>
+                    {title}
+                </Text>
+            )}
             <View style={styles.inputContainer}>
                 <TextInput
                     ref={ref}
@@ -118,5 +85,43 @@ const ShareInput = forwardRef<TextInput, IProps>((props, ref) => {
         </View>
     )
 });
+
+const styles = StyleSheet.create({
+    inputGroup: {
+        marginBottom: 12,
+    },
+    label: {
+        fontSize: 14,
+        fontWeight: "600",
+        marginBottom: 8,
+    },
+    inputContainer: {
+        position: "relative",
+        justifyContent: 'center',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ddd',
+        paddingHorizontal: 15,
+        paddingVertical: 15,
+        borderRadius: 15,
+        backgroundColor: APP_COLOR.WHITE,
+        fontSize: 16,
+        color: APP_COLOR.BLACK,
+    },
+    inputFocused: {
+        borderColor: APP_COLOR.BLACK,
+        backgroundColor: APP_COLOR.WHITE,
+    },
+    eye: {
+        position: 'absolute',
+        right: 15,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 12,
+        marginTop: 5,
+    }
+})
 
 export default ShareInput;

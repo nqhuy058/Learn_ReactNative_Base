@@ -1,27 +1,18 @@
-import React, { useState, useMemo, useRef } from 'react';
-import {
-  StyleSheet, View, Text, Pressable, ScrollView, Alert, Modal, Image, Switch,
-  TextInput,
-} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
-import { APP_COLOR } from '../../utils/constant';
-import { useAppContext } from '../../context/app.context';
-import ShareButton from '../../components/button/share.button';
-import ShareInput from '../../components/input/share.input';
-import UserAvatar from '../../components/avatar/user.avatar';
-import InforCard from '../../components/card/infor.card';
 import Toast from 'react-native-toast-message';
-import { useTheme, ThemeColors } from '../../components/theme/themeContext';
+import { useAppContext } from '../../context/app.context';
+import { useTheme } from '../../components/theme/themeContext';
+import AvatarSection from '../../components/profile/avatar.section';
+import AvatarPickerModal from '../../components/profile/avatar.picker.modal';
+import EditProfileForm from '../../components/profile/profile.edit';
+import ProfileMenu from '../../components/profile/profile.menu';
 
 const ProfileScreen = ({ navigation }: any) => {
   const { user, updateUser } = useAppContext();
-
   const { theme, toggleTheme, colors } = useTheme();
-
-
-  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [isAvatarModalVisible, setAvatarModalVisible] = useState(false);
@@ -31,488 +22,140 @@ const ProfileScreen = ({ navigation }: any) => {
     email: user?.email || '',
   });
 
-  const nameRef = useRef<TextInput>(null);
-
   const handleSaveProfile = () => {
     if (!editedUser.firstName.trim() || !editedUser.lastName.trim()) {
       Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin');
       return;
     }
-
     updateUser({
       firstName: editedUser.firstName,
       lastName: editedUser.lastName,
       email: editedUser.email,
     });
-
-    Toast.show({
-      type: 'success',
-      text1: 'Cập nhật thành công',
-      text2: 'Thông tin cá nhân đã được cập nhật',
-    });
-
+    Toast.show({ type: 'success', text1: 'Cập nhật thành công', text2: 'Thông tin cá nhân đã được cập nhật' });
     setIsEditMode(false);
   };
 
-  const handlePickCamera = () => {
-    const options = {
-      mediaType: 'photo',
-      includeBase64: true,
-      maxHeight: 500,
-      maxWidth: 500,
-    };
+  const handleUpdateAvatar = (response: any) => {
+    if (response.didCancel) return;
+    if (response.error) {
+      Toast.show({ type: 'error', text1: 'Lỗi', text2: response.error });
+    } else {
+      const base64 = `data:image/jpeg;base64,${response.assets[0].base64}`;
+      updateUser({ avatar: base64 });
+      setAvatarModalVisible(false);
+      Toast.show({ type: 'success', text1: 'Cập nhật ảnh thành công' });
+    }
+  };
 
-    launchCamera(options as any, (response: any) => {
-      if (response.didCancel) return;
-      if (response.error) {
-        Toast.show({ type: 'error', text1: 'Lỗi', text2: response.error });
-      } else {
-        const base64 = `data:image/jpeg;base64,${response.assets[0].base64}`;
-        updateUser({ avatar: base64 });
-        setAvatarModalVisible(false);
-        Toast.show({ type: 'success', text1: 'Cập nhật ảnh thành công' });
-      }
-    });
+  const handlePickCamera = () => {
+    launchCamera({ mediaType: 'photo', includeBase64: true, maxHeight: 500, maxWidth: 500 } as any, handleUpdateAvatar);
   };
 
   const handlePickGallery = () => {
-    const options = {
-      mediaType: 'photo',
-      includeBase64: true,
-      maxHeight: 500,
-      maxWidth: 500,
-    };
-
-    launchImageLibrary(options as any, (response: any) => {
-      if (response.didCancel) return;
-      if (response.error) {
-        Toast.show({ type: 'error', text1: 'Lỗi', text2: response.error });
-      } else {
-        const base64 = `data:image/jpeg;base64,${response.assets[0].base64}`;
-        updateUser({ avatar: base64 });
-        setAvatarModalVisible(false);
-        Toast.show({ type: 'success', text1: 'Cập nhật ảnh thành công' });
-      }
-    });
+    launchImageLibrary({ mediaType: 'photo', includeBase64: true, maxHeight: 500, maxWidth: 500 } as any, handleUpdateAvatar);
   };
 
   const handleLogout = () => {
     Alert.alert('Đăng xuất', 'Bạn có chắc chắn muốn đăng xuất?', [
       { text: 'Hủy', style: 'cancel' },
-      {
-        text: 'Đồng ý',
-        onPress: () => {
-          navigation.replace('login');
-          Toast.show({ type: 'success', text1: 'Đã đăng xuất' });
-        },
-      },
+      { text: 'Đồng ý', onPress: () => { navigation.replace('login'); Toast.show({ type: 'success', text1: 'Đã đăng xuất' }); } },
     ]);
   };
 
   if (!user) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.centerContainer}>
-          <Text style={styles.errorText}>Vui lòng đăng nhập trước</Text>
+          <Text style={{ fontSize: 16, color: colors.subText }}>Vui lòng đăng nhập trước</Text>
         </View>
       </SafeAreaView>
     );
   }
 
-  const isBase64Avatar = user.avatar?.startsWith('data:image');
-
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Hồ sơ cá nhân</Text>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Hồ sơ cá nhân</Text>
         </View>
 
-        {/* Avatar Section */}
-        <View style={styles.avatarSection}>
-          {isBase64Avatar ? (
-            <Pressable
-              style={styles.imageAvatarContainer}
-              onPress={() => setAvatarModalVisible(false)}
-            >
-              <Image
-                source={{ uri: user.avatar }}
-                style={styles.imageAvatar}
-              />
-              {isEditMode && (
-                <Pressable
-                  style={styles.cameraButton}
-                  onPress={() => setAvatarModalVisible(true)}
-                >
-                  <MaterialIcons name="camera" size={16} color={APP_COLOR.WHITE} />
-                </Pressable>
-              )}
-            </Pressable>
-          ) : (
-            <UserAvatar
-              avatar={user.avatar || '👨'}
-              size="large"
-              showCamera={isEditMode}
-              onCameraPress={() => setAvatarModalVisible(true)}
-            />
-          )}
-        </View>
+        {/* Avatar */}
+        <AvatarSection
+          avatar={user.avatar}
+          isEditMode={isEditMode}
+          onPressCamera={() => setAvatarModalVisible(true)}
+          colors={colors}
+        />
 
-        {/* User Info */}
+        {/* Thông tin chi tiết */}
         <View style={styles.userInfoSection}>
           {isEditMode ? (
-            <>
-              <Text style={styles.sectionTitle}>Chỉnh sửa thông tin</Text>
-              <ShareInput
-                title='Họ'
-                value={editedUser.firstName}
-                onChangeText={(text: string) =>
-                  setEditedUser({ ...editedUser, firstName: text })
-                }
-                style={styles.input}
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  nameRef.current?.focus();
-                }}
-                blurOnSubmit={false}
-              />
-              <ShareInput
-                ref={nameRef}
-                title="Tên"
-                value={editedUser.lastName}
-                onChangeText={(text: string) =>
-                  setEditedUser({ ...editedUser, lastName: text })
-                }
-                style={styles.input}
-                returnKeyType="done"
-                onSubmitEditing={handleSaveProfile}
-              />
-              <ShareInput
-                title="Ngày sinh"
-                value={user.dob}
-                editable={false}
-                style={styles.inputDisabled}
-              />
-              <ShareInput
-                title="Email"
-                value={editedUser.email}
-                editable={false}
-                style={styles.inputDisabled}
-              />
-              <View style={styles.buttonGroup}>
-                <ShareButton
-                  tittle="Lưu"
-                  onPress={handleSaveProfile}
-                  btnStyle={[styles.button, styles.saveButton]}
-                  textStyle={styles.buttonText}
-                />
-                <ShareButton
-                  tittle="Hủy"
-                  onPress={() => setIsEditMode(false)}
-                  btnStyle={[styles.button, styles.cancelButton]}
-                  textStyle={[styles.buttonText, styles.cancelButtonText]}
-                />
-              </View>
-            </>
+            <EditProfileForm
+              user={user}
+              editedUser={editedUser}
+              setEditedUser={setEditedUser}
+              onSave={handleSaveProfile}
+              onCancel={() => setIsEditMode(false)}
+              colors={colors}
+            />
           ) : (
-            <>
-              <View style={styles.userNameSection}>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={styles.userName}>
-                    {user.firstName} {user.lastName}
-                  </Text>
-                  <Text style={styles.userEmail}>
-                    {user.email}
-                  </Text>
-                </View>
-              </View>
-
-              {/* Menu Items */}
-              <View style={styles.menuSection}>
-                <InforCard
-                  icon="pencil"
-                  label="Chỉnh sửa thông tin"
-                  onPress={() => {
-                    setEditedUser({
-                      firstName: user.firstName,
-                      lastName: user.lastName,
-                      email: user.email,
-                    });
-                    setIsEditMode(true);
-                  }}
-                />
-
-                <View style={styles.themeRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <MaterialIcons name="theme-light-dark" size={24} color={colors.text} style={{ marginRight: 15 }} />
-                    <Text style={{ fontSize: 16, color: colors.text }}>Giao diện tối</Text>
-                  </View>
-                  <Switch
-                    value={theme === 'dark'}
-                    onValueChange={toggleTheme}
-                    trackColor={{ false: '#767577', true: APP_COLOR.BLUE_LIGHT }}
-                    thumbColor={'#f4f3f4'}
-                  />
-                </View>
-              </View>
-
-              {/* Logout Button */}
-              <ShareButton
-                tittle="Đăng xuất"
-                onPress={handleLogout}
-                btnStyle={styles.logoutButton}
-                textStyle={styles.logoutButtonText}
-              />
-            </>
+            <ProfileMenu
+              user={user}
+              onEditPress={() => {
+                setEditedUser({ firstName: user.firstName, lastName: user.lastName, email: user.email });
+                setIsEditMode(true); 
+              }}
+              isDarkTheme={theme === 'dark'}
+              toggleTheme={toggleTheme}
+              onLogout={handleLogout}
+              colors={colors}
+            />
           )}
         </View>
       </ScrollView>
 
-      {/* Avatar Modal */}
-      <Modal
+      {/* Modal chọn ảnh */}
+      <AvatarPickerModal
         visible={isAvatarModalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setAvatarModalVisible(false)}
-      >
-        <Pressable
-          style={styles.modalBackdrop}
-          onPress={() => setAvatarModalVisible(false)}
-        >
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Chọn ảnh đại diện</Text>
-            <View style={styles.modalButtonGroup}>
-              <ShareButton
-                tittle="Chụp ảnh"
-                onPress={handlePickCamera}
-                btnStyle={styles.modalBtn}
-                textStyle={styles.modalBtnText}
-              />
-              <ShareButton
-                tittle="Chọn từ thư viện"
-                onPress={handlePickGallery}
-                btnStyle={styles.modalBtn}
-                textStyle={styles.modalBtnText}
-              />
-            </View>
-            <ShareButton
-              tittle="Đóng"
-              onPress={() => setAvatarModalVisible(false)}
-              btnStyle={[styles.modalBtn, styles.closeBtn]}
-              textStyle={styles.modalBtnTextClose}
-            />
-          </View>
-        </Pressable>
-      </Modal>
+        onClose={() => setAvatarModalVisible(false)}
+        onCamera={handlePickCamera}
+        onGallery={handlePickGallery}
+        colors={colors}
+      />
     </SafeAreaView>
   );
 };
 
-
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: colors.background,
+    flex: 1
   },
   scrollContent: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    fontSize: 16,
-    color: colors.subText,
+    alignItems: 'center'
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomWidth: 1
   },
   headerTitle: {
     fontSize: 25,
     fontWeight: 'bold',
-    color: colors.text,
     textAlign: 'center',
-    flex: 1,
-  },
-  avatarSection: {
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
-  imageAvatarContainer: {
-    position: 'relative',
-  },
-  imageAvatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-  },
-  cameraButton: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: APP_COLOR.BLUE_LIGHT,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: colors.background,
+    flex: 1
   },
   userInfoSection: {
     paddingHorizontal: 16,
-    flex: 1,
+    flex: 1
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    color: colors.text,
-    alignSelf: 'center',
-  },
-  userNameSection: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  userName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  userEmail: {
-    fontSize: 14,
-    color: colors.subText,
-  },
-  menuSection: {
-    marginBottom: 24,
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.card,
-  },
-  // Style riêng cho dòng Switch theme
-  themeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    backgroundColor: colors.card,
-  },
-  buttonGroup: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
-    alignSelf: 'center',
-  },
-  button: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 50,
-    borderRadius: 12,
-  },
-  saveButton: {
-    backgroundColor: APP_COLOR.BLUE_LIGHT,
-  },
-  cancelButton: {
-    backgroundColor: colors.card, // Nút hủy màu xám động
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: APP_COLOR.WHITE,
-  },
-  cancelButtonText: {
-    color: colors.text, // Chữ nút hủy động
-  },
-  logoutButton: {
-    backgroundColor: 'transparent',
-    borderRadius: 15,
-    paddingVertical: 12,
-    marginBottom: 24,
-    width: '70%',
-    alignSelf: 'center',
-    borderWidth: 1,
-    borderColor: APP_COLOR.BLUE_LIGHT,
-  },
-  logoutButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: APP_COLOR.BLUE_LIGHT,
-    textAlign: 'center',
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: colors.background, // Modal nền động
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    paddingBottom: 32,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: colors.text,
-  },
-  modalButtonGroup: {
-    gap: 12,
-    marginBottom: 12,
-  },
-  modalBtn: {
-    backgroundColor: APP_COLOR.BLUE_LIGHT,
-    borderRadius: 12,
-    paddingVertical: 12,
-  },
-  modalBtnText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: APP_COLOR.WHITE,
-  },
-  modalBtnTextClose: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  closeBtn: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  // Styles cho input khi truyền vào ShareInput
-  input: {
-    backgroundColor: colors.card,
-    color: colors.text,
-    borderColor: colors.border,
-  },
-  inputDisabled: {
-    backgroundColor: colors.card,
-    color: colors.subText,
-    borderColor: colors.border,
-    opacity: 0.7,
-  }
 });
 
 export default ProfileScreen;

@@ -10,25 +10,23 @@ interface InforCardProps {
     onPress?: () => void;
     showChevron?: boolean;
     style?: StyleProp<ViewStyle>;
+    textColor?: string;
 }
 
 const InforCard = ({
-    icon,
-    label,
-    status,
-    onPress,
-    showChevron = true,
+    icon, label, status, onPress,
+    showChevron = true, textColor = APP_COLOR.BLACK,
 }: InforCardProps) => {
     return (
         <Pressable style={styles.container} onPress={onPress} disabled={!onPress}>
             <View style={styles.leftContent}>
-                <MaterialIcons name={icon} size={24} color={APP_COLOR.BLACK} />
-                <Text style={styles.label}>{label}</Text>
+                <MaterialIcons name={icon} size={24} color={textColor} />
+                <Text style={[styles.label, { color: textColor }]}>{label}</Text>
             </View>
             <View style={styles.rightContent}>
                 {status && <Text style={styles.status}>{status}</Text>}
                 {showChevron && (
-                    <MaterialIcons name="chevron-right" size={20} color={APP_COLOR.GREY} />
+                    <MaterialIcons name="chevron-right" size={20} color={textColor} />
                 )}
             </View>
         </Pressable>
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 14,
         borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
+        borderBottomColor: '#f0f0f0', 
     },
     leftContent: {
         flexDirection: 'row',
@@ -52,7 +50,6 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 16,
-        color: APP_COLOR.BLACK,
         fontWeight: '500',
         marginLeft: 12,
     },
