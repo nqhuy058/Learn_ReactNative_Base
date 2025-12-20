@@ -1,66 +1,155 @@
-import React, { useRef } from 'react';
-import { View, Text, StyleSheet, TextInput } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native';
+import { Formik } from 'formik';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import ShareInput from '../input/share.input';
 import ShareButton from '../button/share.button';
 import { APP_COLOR } from '../../utils/constant';
 import { ThemeColors } from '../theme/themeContext';
+import { EditProfileSchema } from '../../utils/validate.chema';
 
 interface EditProfileFormProps {
     user: any;
-    editedUser: any;
-    setEditedUser: (u: any) => void;
-    onSave: () => void;
+    onSave: (values: any) => void;
     onCancel: () => void;
     colors: ThemeColors;
 }
 
-const EditProfileForm = ({ user, editedUser, setEditedUser, onSave, onCancel, colors }: EditProfileFormProps) => {
+const EditProfileForm = ({ user, onSave, onCancel, colors }: EditProfileFormProps) => {
     const styles = createStyles(colors);
     const nameRef = useRef<TextInput>(null);
+    const dobRef = useRef<TextInput>(null);
+
+    const [isDatePickerVisible, setDatePickerVisible] = useState(false); // State ẩn/hiện popup ngày
+
+    // Hàm chuyển đổi chuỗi ngày sinh (dd/mm/yyyy) sang đối tượng Date để DatePicker hiển thị đúng
+    const parseDateString = (dateString: string) => {
+        if (!dateString) return new Date();
+        const parts = dateString.split('/');
+        // Lưu ý: Tháng trong JS Date bắt đầu từ 0
+        if (parts.length === 3) {
+            return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+        }
+        return new Date();
+    };
 
     return (
-        <View>
-            <Text style={styles.sectionTitle}>Chỉnh sửa thông tin</Text>
-            <ShareInput
-                title='Họ'
-                value={editedUser.firstName}
-                onChangeText={(text: string) => setEditedUser({ ...editedUser, firstName: text })}
-                style={styles.input}
-                returnKeyType="next"
-                onSubmitEditing={() => nameRef.current?.focus()}
-                blurOnSubmit={false}
-                textColor={colors.text}
-            />
-            <ShareInput
-                ref={nameRef}
-                title="Tên"
-                value={editedUser.lastName}
-                onChangeText={(text: string) => setEditedUser({ ...editedUser, lastName: text })}
-                style={styles.input}
-                returnKeyType="done"
-                onSubmitEditing={onSave}
-                textColor={colors.text}
-            />
-            <ShareInput
-                title="Ngày sinh"
-                value={user.dob}
-                editable={false}
-                style={styles.inputDisabled}
-                textColor={colors.text}
-            />
-            <ShareInput
-                title="Email"
-                value={editedUser.email}
-                editable={false}
-                style={styles.inputDisabled}
-                textColor={colors.text}
-            />
+        <Formik
+            initialValues={{
+                firstName: user?.firstName || '',
+                lastName: user?.lastName || '',
+                email: user?.email || '',
+                dob: user?.dob || '',
+            }}
+            validationSchema={EditProfileSchema}
+            onSubmit={(values) => {
+                onSave(values);
+            }}
+        >
+            {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                setFieldValue, // Lấy hàm này để update giá trị ngày sinh thủ công
+                values,
+                errors,
+                touched
+            }) => (
+                <View>
+                    <Text style={styles.sectionTitle}>Chỉnh sửa thông tin</Text>
 
-            <View style={styles.buttonGroup}>
-                <ShareButton tittle="Lưu" onPress={onSave} btnStyle={[styles.button, styles.saveButton]} textStyle={styles.buttonText} />
-                <ShareButton tittle="Hủy" onPress={onCancel} btnStyle={[styles.button, styles.cancelButton]} textStyle={[styles.buttonText, styles.cancelButtonText]} />
-            </View>
-        </View>
+                    {/* Input Họ */}
+                    <ShareInput
+                        title='Họ'
+                        value={values.firstName}
+                        onChangeText={handleChange('firstName')}
+                        onBlur={handleBlur('firstName')}
+                        error={errors.firstName}
+                        touched={touched.firstName}
+                        style={styles.input}
+                        returnKeyType="next"
+                        onSubmitEditing={() => nameRef.current?.focus()}
+                        blurOnSubmit={false}
+                        textColor={colors.text}
+                    />
+
+                    {/* Input Tên */}
+                    <ShareInput
+                        ref={nameRef}
+                        title="Tên"
+                        value={values.lastName}
+                        onChangeText={handleChange('lastName')}
+                        onBlur={handleBlur('lastName')}
+                        error={errors.lastName}
+                        touched={touched.lastName}
+                        style={styles.input}
+                        textColor={colors.text}
+                        returnKeyType="next"
+                        onSubmitEditing={() => dobRef.current?.focus()}
+                        blurOnSubmit={false}
+                    />
+
+                    {/* Input Ngày sinh - Bọc trong Pressable */}
+                    <Pressable onPress={() => setDatePickerVisible(true)}>
+                        <View pointerEvents="none">
+                            <ShareInput
+                                ref={dobRef}
+                                title="Ngày sinh"
+                                value={values.dob}
+                                editable={false} // Không cho nhập tay
+                                style={styles.input} // Dùng style input thường thay vì disabled để nhìn rõ hơn
+                                textColor={colors.text}
+                                error={errors.dob as string}
+                                touched={touched.dob as boolean}
+                                returnKeyType="done"
+                                onSubmitEditing={handleSubmit as any}
+                            />
+                        </View>
+                    </Pressable>
+
+                    {/* Component chọn ngày */}
+                    {isDatePickerVisible && (
+                        <DateTimePicker
+                            value={parseDateString(values.dob)}
+                            mode="date"
+                            display="default"
+                            onChange={(event, selectedDate) => {
+                                setDatePickerVisible(false); // Ẩn picker sau khi chọn
+                                if (selectedDate) {
+                                    // Chuyển Date object thành chuỗi dd/mm/yyyy
+                                    const formattedDate = selectedDate.toLocaleDateString('vi-VN');
+                                    setFieldValue('dob', formattedDate);
+                                }
+                            }}
+                            maximumDate={new Date()} // Không cho chọn ngày tương lai
+                        />
+                    )}
+
+                    <ShareInput
+                        title="Email"
+                        value={values.email}
+                        editable={false}
+                        style={styles.inputDisabled}
+                        textColor={colors.text}
+                    />
+
+                    <View style={styles.buttonGroup}>
+                        <ShareButton
+                            tittle="Lưu"
+                            onPress={() => handleSubmit()}
+                            btnStyle={[styles.button, styles.saveButton]}
+                            textStyle={styles.buttonText}
+                        />
+                        <ShareButton
+                            tittle="Hủy"
+                            onPress={onCancel}
+                            btnStyle={[styles.button, styles.cancelButton]}
+                            textStyle={[styles.buttonText, styles.cancelButtonText]}
+                        />
+                    </View>
+                </View>
+            )}
+        </Formik>
     );
 };
 

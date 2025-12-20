@@ -24,9 +24,9 @@ const RequestPasswordModal = () => {
             Toast.show({
                 type: 'success',
                 text1: 'Thành công',
-                text2: `Mã OTP giả định đã gửi tới ${values.email}`
+                text2: `Mã OTP đã gửi tới ${values.email}`
             });
-            
+
             navigation.navigate('forgotPassword', {
                 email: values.email
             });
@@ -68,6 +68,8 @@ const RequestPasswordModal = () => {
                                             value={values.email}
                                             error={errors.email}
                                             touched={touched.email}
+                                            returnKeyType="done"
+                                            onSubmitEditing={handleSubmit as any}
                                         />
 
                                         <ShareButton

@@ -42,7 +42,17 @@ export const ForgotPasswordSchema = Yup.object().shape({
         .required('Password không được để trống'),
     confirmPassword: Yup.string()
         .required('confirmPassword không được để trống')
-        .oneOf([Yup.ref('password')], 'Passwords must match'),
+        .oneOf([Yup.ref('password')], 'Passwords không khớp'),
     code: Yup.string()
+        .min(6, 'Code cần tối thiểu 6 ký tự')
+        .max(6, 'Code tối đa 6 ký tự')
         .required('Code không được để trống'),
+        
+});
+
+export const EditProfileSchema = Yup.object().shape({
+    firstName: Yup.string()
+        .required('Họ không được để trống'),
+    lastName: Yup.string()
+        .required('Tên không được để trống'),
 });

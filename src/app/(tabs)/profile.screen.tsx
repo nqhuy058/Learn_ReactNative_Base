@@ -22,15 +22,12 @@ const ProfileScreen = ({ navigation }: any) => {
     email: user?.email || '',
   });
 
-  const handleSaveProfile = () => {
-    if (!editedUser.firstName.trim() || !editedUser.lastName.trim()) {
-      Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin');
-      return;
-    }
+  const handleSaveProfile = (values: any) => {
     updateUser({
-      firstName: editedUser.firstName,
-      lastName: editedUser.lastName,
-      email: editedUser.email,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      dob: values.dob,
     });
     Toast.show({ type: 'success', text1: 'Cập nhật thành công', text2: 'Thông tin cá nhân đã được cập nhật' });
     setIsEditMode(false);
@@ -94,8 +91,6 @@ const ProfileScreen = ({ navigation }: any) => {
           {isEditMode ? (
             <EditProfileForm
               user={user}
-              editedUser={editedUser}
-              setEditedUser={setEditedUser}
               onSave={handleSaveProfile}
               onCancel={() => setIsEditMode(false)}
               colors={colors}
@@ -105,7 +100,7 @@ const ProfileScreen = ({ navigation }: any) => {
               user={user}
               onEditPress={() => {
                 setEditedUser({ firstName: user.firstName, lastName: user.lastName, email: user.email });
-                setIsEditMode(true); 
+                setIsEditMode(true);
               }}
               isDarkTheme={theme === 'dark'}
               toggleTheme={toggleTheme}

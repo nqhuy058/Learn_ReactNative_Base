@@ -6,8 +6,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Formik } from 'formik';
-import React, { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
@@ -17,6 +17,9 @@ const ForgotPasswordModal = () => {
 
     const email = navigation.getState().routes.find(route => route.name === 'forgotPassword')?.params?.email || '';
 
+    const passwordRef = useRef<TextInput>(null);
+    const confirmPasswordRef = useRef<TextInput>(null);
+
     const handleConfirmCode = async (values: any) => {
         const { code } = values;
 
@@ -25,7 +28,7 @@ const ForgotPasswordModal = () => {
         setTimeout(() => {
             setLoading(false);
 
-            if (code === '123456') { 
+            if (code === '123456') {
                 Toast.show({
                     type: 'success',
                     text1: 'Thành công',
@@ -95,8 +98,14 @@ const ForgotPasswordModal = () => {
                                             value={values.code}
                                             error={errors.code}
                                             touched={touched.code}
+                                            returnKeyType="next"
+                                            onSubmitEditing={() => {
+                                                passwordRef.current?.focus();
+                                            }}
+                                            blurOnSubmit={false}
                                         />
                                         <ShareInput
+                                            ref={passwordRef}
                                             placeholder="Mật khẩu mới"
                                             secureTextEntry
                                             onChangeText={handleChange('password')}
@@ -104,8 +113,14 @@ const ForgotPasswordModal = () => {
                                             value={values.password}
                                             error={errors.password}
                                             touched={touched.password}
+                                            returnKeyType="next"
+                                            onSubmitEditing={() => {
+                                                confirmPasswordRef.current?.focus();
+                                            }}
+                                            blurOnSubmit={false}
                                         />
                                         <ShareInput
+                                            ref={confirmPasswordRef}
                                             placeholder="Xác nhận mật khẩu mới"
                                             secureTextEntry
                                             onChangeText={handleChange('confirmPassword')}
@@ -113,6 +128,8 @@ const ForgotPasswordModal = () => {
                                             value={values.confirmPassword}
                                             error={errors.confirmPassword}
                                             touched={touched.confirmPassword}
+                                            returnKeyType="done"
+                                            onSubmitEditing={handleSubmit as any}
                                         />
 
                                         <ShareButton
