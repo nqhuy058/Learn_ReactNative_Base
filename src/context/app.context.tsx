@@ -1,27 +1,33 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getProfileApi } from "../utils/api/api"; 
 
+// Định nghĩa kiểu dữ liệu User
 interface UserData {
     firstName: string;
     lastName: string;
     email: string;
-    password: string;
-    dob: string;
-    createdAt: string;
+    password?: string; 
+    dob?: string;
+    createdAt?: string;
     avatar?: string;
 }
 
+// Định nghĩa Context
 interface AppContextType {
     user: UserData | null;
-    setUser: (user: UserData) => void;
+    setUser: (user: UserData | null) => void;
     updateUser: (updates: Partial<UserData>) => void;
-    clearUser: () => void;
+    logout: () => void;
     isLoggedIn: boolean;
+    appLoading: boolean; // Trạng thái đang check token
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<UserData | null>(null);
+    const [appLoading, setAppLoading] = useState(true); // Mặc định là đang load
 
     const updateUser = (updates: Partial<UserData>) => {
         if (user) {
@@ -29,8 +35,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const clearUser = () => {
-        setUser(null);
+    const logout = async () => {
+        try {
+            await AsyncStorage.removeItem("access_token");
+        } catch (error) {
+            console.log("Logout error", error);
+        }
     };
 
     return (
@@ -39,8 +49,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 user, 
                 setUser, 
                 updateUser,
-                clearUser,
-                isLoggedIn: user !== null 
+                logout,
+                isLoggedIn: !!user, 
+                appLoading 
             }}
         >
             {children}

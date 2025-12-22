@@ -11,7 +11,7 @@ const axiosClient = axios.create({
 
 // Interceptor: Tự động gắn Token vào header mỗi khi gọi API
 axiosClient.interceptors.request.use(async (config) => {
-    const token = await AsyncStorage.getItem('userToken');
+    const token = await AsyncStorage.getItem('access_token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }

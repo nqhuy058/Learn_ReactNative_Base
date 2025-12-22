@@ -10,6 +10,7 @@ import SignUpModal from './\(auth\)/signup.modal';
 import RequestPasswordModal from './(auth)/request.password.modal';
 import TabNavigator from './(tabs)/_layout';
 import ForgotPasswordModal from './(auth)/forgot.password.modal';
+import RootPage from '.';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,13 @@ const RootLayout = () => {
                                 headerShown: false,
                             }}
                         >
+                            <Stack.Screen
+                                name="root"
+                                component={RootPage}
+                                options={{
+                                    headerShown: false,
+                                }}
+                            />
                             <Stack.Screen
                                 name="login"
                                 component={LoginPage}

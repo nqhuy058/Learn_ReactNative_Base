@@ -31,7 +31,12 @@ const HomePage = () => {
     const handleSearch = (value: string) => {
         if (value.length > 2) {
             fetchLocations({ cityName: value }).then((data: LocationData[]) => {
-                setLocations(data);
+                // Chỉ cập nhật nếu có dữ liệu, nếu null thì bỏ qua hoặc set rỗng
+                if (data) {
+                    setLocations(data);
+                } else {
+                    setLocations([]);
+                }
             });
         }
     }
@@ -74,7 +79,7 @@ const HomePage = () => {
     }, []);
 
     // --- SỬA QUAN TRỌNG: Thêm "|| {}" để tránh crash khi weather là null ---
-    const { current, location, forecast } = weather || {}; 
+    const { current, location, forecast } = weather || {};
 
     return (
         <View style={styles.container}>
@@ -91,9 +96,9 @@ const HomePage = () => {
                 </View>
             ) : (
                 <SafeAreaView style={styles.safeArea}>
-                    
+
                     {/* Header */}
-                    <WeatherHeader 
+                    <WeatherHeader
                         showSearch={showSearch}
                         toggleSearch={toggleSearch}
                         locations={locations}
@@ -103,21 +108,21 @@ const HomePage = () => {
 
                     {/* Body - Chỉ hiển thị khi có dữ liệu current */}
                     {current ? (
-                        <WeatherBody 
+                        <WeatherBody
                             current={current}
                             location={location}
                             forecast={forecast}
                         />
                     ) : (
                         // Hiển thị view trống nếu không có dữ liệu để tránh undefined
-                        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             {/* Bạn có thể thêm Text báo lỗi ở đây nếu muốn */}
                         </View>
                     )}
 
                     {/* Footer - Chỉ hiển thị khi có dữ liệu forecast */}
                     {forecast && (
-                        <WeatherFooter 
+                        <WeatherFooter
                             forecast={forecast}
                         />
                     )}

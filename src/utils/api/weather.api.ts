@@ -13,13 +13,19 @@ const locationsEndpoint = (params: WeatherParams) =>
     `https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${params.cityName}`;
 
 const apiCall = async (endpoint: string): Promise<any> => {
-    const options: AxiosRequestConfig = {
-        method: 'GET',
-        url: endpoint
-    };
     try {
-        const response = await axios.request(options);
-        return response.data;
+        console.log("Calling URL:", endpoint);
+        
+        // Dùng fetch thay vì axios để test
+        const response = await fetch(endpoint);
+        
+        if (!response.ok) {
+            console.log("HTTP Error:", response.status);
+            return null;
+        }
+        
+        const data = await response.json();
+        return data;
     } catch (error) {
         console.log('Error fetching weather:', error);
         return null;

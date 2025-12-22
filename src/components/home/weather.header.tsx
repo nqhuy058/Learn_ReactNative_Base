@@ -46,7 +46,7 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({
             </View>
 
             {/* Dropdown gợi ý địa điểm */}
-            {locations.length > 0 && showSearch ? (
+            {locations?.length > 0 && showSearch ? (
                 <View style={styles.locationList}>
                     {locations.map((loc, index) => {
                         let showBorder = index + 1 !== locations.length;
