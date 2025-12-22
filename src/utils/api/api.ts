@@ -25,3 +25,13 @@ export const verifyCodeApi = async (data: { email: string; code: string }) => {
 export const resendCodeApi = async (data: { email: string }) => {
     return await axiosClient.post('/resend-code', data);
 };
+
+// Gửi yêu cầu quên mật khẩu 
+export const forgotPasswordApi = async (email: string) => {
+    return await axiosClient.post('/forgot-password', { email });
+};
+
+// Đặt lại mật khẩu 
+export const resetPasswordApi = async (data: { email: string, code: string, newPassword: string }) => {
+    return await axiosClient.post('/reset-password', data);
+};

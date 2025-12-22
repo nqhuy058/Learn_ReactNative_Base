@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
+import { forgotPasswordApi } from "../../utils/api/api";
 
 const RequestPasswordModal = () => {
     const [loading, setLoading] = useState(false);
@@ -18,20 +19,23 @@ const RequestPasswordModal = () => {
     const handleRequestPassword = async (values: { email: string }) => {
         setLoading(true);
 
-        setTimeout(() => {
-            setLoading(false);
-
+        try {
+            await forgotPasswordApi(values.email);
             Toast.show({
                 type: 'success',
-                text1: 'Thành công',
-                text2: `Mã OTP đã gửi tới ${values.email}`
+                text1: 'Đã gửi mã xác nhận',
+                text2: 'Vui lòng kiểm tra email của bạn'
             });
-
-            navigation.navigate('forgotPassword', {
-                email: values.email
+            navigation.navigate('forgotPassword', { email: values.email });
+        } catch (error: any) {
+            Toast.show({
+                type: 'error',
+                text1: 'Gửi thất bại',
+                text2: error.response?.data?.message || 'Email không tồn tại.'
             });
-
-        }, 1000);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

@@ -3,49 +3,59 @@ import ShareInput from "../../components/input/share.input";
 import { APP_COLOR } from "../../utils/constant";
 import { ForgotPasswordSchema } from "../../utils/validate.chema";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Formik } from 'formik';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
+import { resetPasswordApi } from "../../utils/api/api";
 
 const ForgotPasswordModal = () => {
     const [loading, setLoading] = useState(false);
     const navigation = useNavigation<NativeStackNavigationProp<any>>();
+    const route = useRoute<any>();
 
-    const email = navigation.getState().routes.find(route => route.name === 'forgotPassword')?.params?.email || '';
+    const email = route.params?.email;
 
     const passwordRef = useRef<TextInput>(null);
     const confirmPasswordRef = useRef<TextInput>(null);
 
+    useEffect(() => {
+        if (!email) {
+            Toast.show({ type: 'error', text1: 'Lỗi', text2: 'Không tìm thấy email yêu cầu.' });
+            navigation.goBack();
+        }
+    }, [email]);
+
     const handleConfirmCode = async (values: any) => {
-        const { code } = values;
+       setLoading(true);
+        try {
+            await resetPasswordApi({
+                email: email,
+                code: values.code,
+                newPassword: values.password
+            });
 
-        setLoading(true);
+            Toast.show({
+                type: 'success',
+                text1: 'Thành công',
+                text2: 'Mật khẩu đã được thay đổi. Vui lòng đăng nhập lại.'
+            });
 
-        setTimeout(() => {
+            navigation.popToTop();
+            navigation.replace('login');
+
+        } catch (error: any) {
+            Toast.show({
+                type: 'error',
+                text1: 'Thất bại',
+                text2: error.response?.data?.message || 'Mã OTP không đúng hoặc đã hết hạn.'
+            });
+        } finally {
             setLoading(false);
-
-            if (code === '123456') {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Thành công',
-                    text2: 'Mật khẩu đã được đặt lại thành công (Mock).'
-                });
-
-                // Quay lại màn hình đăng nhập
-                navigation.goBack();
-                navigation.goBack();
-            } else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi',
-                    text2: 'Mã xác nhận không đúng.'
-                });
-            }
-        }, 2000);
+        }
     };
 
     const handleResendCode = async () => {
