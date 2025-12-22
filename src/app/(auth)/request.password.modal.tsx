@@ -46,7 +46,6 @@ const RequestPasswordModal = () => {
             >
                 <View style={styles.header}>
                     <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-                        {/* Đã sửa thành icon của react-native-vector-icons */}
                         <Ionicons name="arrow-back" size={24} color={APP_COLOR.BLACK} />
                     </Pressable>
                 </View>

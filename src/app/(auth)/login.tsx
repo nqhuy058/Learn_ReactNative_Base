@@ -154,17 +154,24 @@ const LoginPage = () => {
                                                     marginTop: 8
                                                 }}
                                             />
-                                            <Text
-                                                style={styles.forgotPassword}
+                                            <Pressable
                                                 onPress={() => !loading && navigation.navigate('requestPassword')}
+                                                style={({ pressed }) => ({
+                                                    opacity: pressed ? 0.5 : 1,
+                                                })}
                                             >
-                                                Quên mật khẩu?
-                                            </Text>
+                                                <Text style={styles.forgotPassword}>
+                                                    Quên mật khẩu?
+                                                </Text>
+                                            </Pressable>
                                         </View>
 
                                         <View style={styles.bottomSection}>
                                             <Pressable
-                                                style={styles.createAccountButton}
+                                                style={({ pressed }) => [
+                                                    styles.createAccountButton,
+                                                    { opacity: pressed ? 0.5 : 1 }
+                                                ]}
                                                 onPress={() => !loading && navigation.navigate('signup')}>
                                                 <Text style={styles.createAccountText}>Create new account</Text>
                                             </Pressable>
