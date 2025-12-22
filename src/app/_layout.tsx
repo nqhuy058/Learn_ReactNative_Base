@@ -11,6 +11,7 @@ import RequestPasswordModal from './(auth)/request.password.modal';
 import TabNavigator from './(tabs)/_layout';
 import ForgotPasswordModal from './(auth)/forgot.password.modal';
 import RootPage from '.';
+import VerifyPage from './(auth)/verify.modal';
 
 const Stack = createNativeStackNavigator();
 
@@ -65,6 +66,14 @@ const RootLayout = () => {
                             <Stack.Screen
                                 name="forgotPassword"
                                 component={ForgotPasswordModal}
+                                options={{
+                                    headerShown: false,
+                                    presentation: "transparentModal",
+                                }}
+                            />
+                            <Stack.Screen
+                                name="verify"
+                                component={VerifyPage}
                                 options={{
                                     headerShown: false,
                                     presentation: "transparentModal",

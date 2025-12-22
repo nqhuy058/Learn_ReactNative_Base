@@ -12,7 +12,7 @@ import ProfileMenu from '../../components/profile/profile.menu';
 import { updateProfileApi } from '../../utils/api/api'; // <--- Import API
 
 const ProfileScreen = ({ navigation }: any) => {
-  const { user, setUser, logout } = useAppContext(); 
+  const { user, setUser, logout } = useAppContext();
   const { theme, toggleTheme, colors } = useTheme();
 
   const [isEditMode, setIsEditMode] = useState(false);
@@ -27,21 +27,18 @@ const ProfileScreen = ({ navigation }: any) => {
     dob: user?.dob || '',
   });
 
-  // --- XỬ LÝ CẬP NHẬT THÔNG TIN ---
   const handleSaveProfile = async (values: any) => {
     setIsLoading(true);
     try {
-      // 1. Gọi API cập nhật
+      // Gọi API cập nhật
       const res = await updateProfileApi({
         firstName: values.firstName,
         lastName: values.lastName,
         dob: values.dob,
-        // email thường không cho phép sửa trực tiếp ở đây
       });
 
       if (res.data) {
-        // 2. Cập nhật thành công -> Lưu dữ liệu mới vào Context
-        // Backend trả về: { message: "...", user: { ... } }
+        // Cập nhật thành công -> Lưu dữ liệu mới vào Context
         setUser(res.data.user);
 
         Toast.show({ type: 'success', text1: 'Cập nhật thành công' });
@@ -59,7 +56,6 @@ const ProfileScreen = ({ navigation }: any) => {
     }
   };
 
-  // --- XỬ LÝ CẬP NHẬT AVATAR ---
   const handleUpdateAvatar = async (response: any) => {
     if (response.didCancel) return;
     if (response.error) {
@@ -72,14 +68,14 @@ const ProfileScreen = ({ navigation }: any) => {
 
     // Đóng modal chọn ảnh
     setAvatarModalVisible(false);
-    setIsLoading(true); // Hiện loading
+    setIsLoading(true);
 
     try {
-      // 1. Gọi API cập nhật avatar
+      // Gọi API cập nhật avatar
       const res = await updateProfileApi({ avatar: base64 });
 
       if (res.data) {
-        // 2. Cập nhật context để UI tự đổi ảnh mới
+        // Cập nhật context để UI tự đổi ảnh mới
         setUser(res.data.user);
         Toast.show({ type: 'success', text1: 'Cập nhật ảnh thành công' });
       }
@@ -96,11 +92,23 @@ const ProfileScreen = ({ navigation }: any) => {
   };
 
   const handlePickCamera = () => {
-    launchCamera({ mediaType: 'photo', includeBase64: true, maxWidth: 500, maxHeight: 500, quality: 0.7 } as any, handleUpdateAvatar);
+    launchCamera({
+      mediaType: 'photo',
+      includeBase64: true,
+      maxWidth: 500,
+      maxHeight: 500,
+      quality: 0.7
+    } as any, handleUpdateAvatar);
   };
 
   const handlePickGallery = () => {
-    launchImageLibrary({ mediaType: 'photo', includeBase64: true, maxWidth: 500, maxHeight: 500, quality: 0.7 } as any, handleUpdateAvatar);
+    launchImageLibrary({
+      mediaType: 'photo',
+      includeBase64: true,
+      maxWidth: 500,
+      maxHeight: 500,
+      quality: 0.7
+    } as any, handleUpdateAvatar);
   };
 
   const handleLogout = () => {
@@ -109,7 +117,7 @@ const ProfileScreen = ({ navigation }: any) => {
       {
         text: 'Đồng ý',
         onPress: () => {
-          logout(); 
+          logout();
           navigation.replace('login');
           Toast.show({ type: 'success', text1: 'Đã đăng xuất' });
         }
@@ -119,11 +127,9 @@ const ProfileScreen = ({ navigation }: any) => {
 
   if (!user) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-        <View style={styles.centerContainer}>
-          <Text style={{ fontSize: 16, color: colors.subText }}>Vui lòng đăng nhập trước</Text>
-        </View>
-      </SafeAreaView>
+      <>
+      
+      </>
     );
   }
 
@@ -137,7 +143,9 @@ const ProfileScreen = ({ navigation }: any) => {
         </View>
       )}
 
-      <ScrollView contentContainerStyle={styles.scrollContent} pointerEvents={isLoading ? 'none' : 'auto'}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        pointerEvents={isLoading ? 'none' : 'auto'}>
         {/* Header */}
         <View style={[styles.header, { borderBottomColor: colors.border }]}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>Hồ sơ cá nhân</Text>
@@ -164,8 +172,12 @@ const ProfileScreen = ({ navigation }: any) => {
             <ProfileMenu
               user={user}
               onEditPress={() => {
-                // Reset form data về giá trị hiện tại của user trước khi sửa
-                setEditedUser({ firstName: user.firstName, lastName: user.lastName, email: user.email, dob: user.dob || '' });
+                setEditedUser({
+                  firstName: user.firstName,
+                  lastName: user.lastName,
+                  email: user.email,
+                  dob: user.dob || ''
+                });
                 setIsEditMode(true);
               }}
               isDarkTheme={theme === 'dark'}

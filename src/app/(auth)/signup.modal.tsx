@@ -38,18 +38,14 @@ const SignUpModal = () => {
                 password,
                 dob: dob.toLocaleDateString('vi-VN'), // Gửi string format vn
             });
-
+            // Thông báo thành công
             Toast.show({
                 type: 'success',
-                text1: 'Đăng ký thành công!',
-                text2: 'Vui lòng đăng nhập.'
+                text1: 'Đăng ký thành công',
+                text2: 'Vui lòng kiểm tra email để lấy mã OTP.'
             });
 
-            setTimeout(() => {
-                setLoading(false);
-                navigation.goBack(); // Quay về trang login
-            }, 1000);
-
+            navigation.navigate('verify', { email: email });
         } catch (error: any) {
             Toast.show({
                 type: 'error',

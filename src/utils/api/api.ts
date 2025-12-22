@@ -15,3 +15,13 @@ export const getProfileApi = async () => {
 export const updateProfileApi = async (data: any) => {
     return await axiosClient.put('/me', data);
 };
+
+// API Xác thực mã OTP
+export const verifyCodeApi = async (data: { email: string; code: string }) => {
+    return await axiosClient.post('/verify', data);
+};
+
+// API Gửi lại mã OTP
+export const resendCodeApi = async (data: { email: string }) => {
+    return await axiosClient.post('/resend-code', data);
+};

@@ -22,7 +22,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { useAppContext } from "../../context/app.context";
-import { loginApi } from "../../utils/api/api";
+import { loginApi, resendCodeApi } from "../../utils/api/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginPage = () => {
@@ -56,10 +56,32 @@ const LoginPage = () => {
             }
         } catch (error: any) {
             console.log("Login Error:", error);
+            const data = error.response?.data;
+
+            // Nếu Backend báo là chưa kích hoạt 
+            if (data && data.isNotActive) {
+
+                Toast.show({
+                    type: 'info',
+                    text1: 'Tài khoản chưa kích hoạt',
+                    text2: 'Đang chuyển đến trang xác thực...'
+                });
+
+                try {
+                    await resendCodeApi({ email });
+                } catch (e) {
+                    console.log("Lỗi tự gửi lại code:", e);
+                }
+
+                // Chuyển hướng sang màn hình Verify, mang theo email
+                navigation.navigate('verify', { email: email });
+
+                return; // Dừng hàm lại, không chạy thông báo lỗi phía dưới
+            }
             Toast.show({
                 type: 'error',
                 text1: 'Đăng nhập thất bại',
-                text2: error.response?.data?.message || 'Email hoặc mật khẩu không đúng.'
+                text2: data?.message || 'Email hoặc mật khẩu không đúng.'
             });
         } finally {
             setLoading(false);

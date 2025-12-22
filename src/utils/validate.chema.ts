@@ -56,3 +56,9 @@ export const EditProfileSchema = Yup.object().shape({
     lastName: Yup.string()
         .required('Tên không được để trống'),
 });
+
+export const VerifySchema = Yup.object().shape({
+    code: Yup.string()
+        .length(6, 'Mã xác thực phải có 6 số')
+        .required('Vui lòng nhập mã xác thực'),
+});
