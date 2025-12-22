@@ -22,12 +22,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { useAppContext } from "../../context/app.context";
+import { loginApi } from "../../utils/api/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
-    const { user } = useAppContext();
+    const { setUser } = useAppContext();
 
     const passwordRef = useRef<TextInput>(null);
 
@@ -35,25 +37,29 @@ const LoginPage = () => {
         setLoading(true);
         const { email, password } = values;
 
-        await new Promise(resolve => setTimeout(() => resolve(true), 2000));
-
         try {
-            // Kiểm tra thông tin đăng nhập
-            if (user && user.email === email && user.password === password) {
-                Toast.show({ type: 'success', text1: 'Đăng nhập thành công!' });
+            //Gọi API Đăng nhập
+            const res = await loginApi({ email, password });
+
+            // Kiểm tra kết quả trả về từ Backend
+            if (res && res.data) {
+                const { token, user } = res.data;
+
+                //Lưu Token vào bộ nhớ máy (để các API sau tự động gắn vào header)
+                await AsyncStorage.setItem('access_token', token);
+
+                //Cập nhật thông tin User vào Context toàn cục
+                setUser(user);
+
+                Toast.show({ type: 'success', text1: 'Đăng nhập thành công!' })
                 navigation.replace('(tabs)');
-            } else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Đăng nhập thất bại',
-                    text2: 'Email hoặc mật khẩu không đúng.'
-                });
             }
-        } catch (error) {
+        } catch (error: any) {
+            console.log("Login Error:", error);
             Toast.show({
                 type: 'error',
-                text1: 'Lỗi',
-                text2: 'Vui lòng thử lại.'
+                text1: 'Đăng nhập thất bại',
+                text2: error.response?.data?.message || 'Email hoặc mật khẩu không đúng.'
             });
         } finally {
             setLoading(false);
@@ -215,3 +221,4 @@ const styles = StyleSheet.create({
 });
 
 export default LoginPage;
+

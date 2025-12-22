@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAppContext } from "../../context/app.context";
+import { registerApi } from "../../utils/api/api";
 
 const SignUpModal = () => {
     const [loading, setLoading] = useState(false);
@@ -29,35 +30,33 @@ const SignUpModal = () => {
         const { firstName, lastName, email, password, dob } = values;
 
         try {
-            // Lưu dữ liệu vào Context
-            const userData = {
+            // Gọi API Đăng ký
+            await registerApi({
                 firstName,
                 lastName,
                 email,
                 password,
-                dob: dob.toLocaleDateString('vi-VN'),
-                createdAt: new Date().toISOString()
-            };
-
-            setUser(userData);
+                dob: dob.toLocaleDateString('vi-VN'), // Gửi string format vn
+            });
 
             Toast.show({
                 type: 'success',
                 text1: 'Đăng ký thành công!',
-                text2: 'Bây giờ bạn có thể đăng nhập.'
+                text2: 'Vui lòng đăng nhập.'
             });
 
             setTimeout(() => {
                 setLoading(false);
-                navigation.goBack();
+                navigation.goBack(); // Quay về trang login
             }, 1000);
 
         } catch (error: any) {
             Toast.show({
                 type: 'error',
-                text1: 'Đã có lỗi xảy ra',
-                text2: error?.message ?? 'Vui lòng thử lại.'
+                text1: 'Đăng ký thất bại',
+                text2: error.response?.data?.message || 'Có lỗi xảy ra.'
             });
+            setLoading(false);
         }
     };
 
@@ -144,12 +143,12 @@ const SignUpModal = () => {
                                         </View>
 
                                         <View style={{ position: 'absolute', right: 15, top: 16 }}>
-                                        <MaterialIcons 
-                                            name="calendar-month" 
-                                            size={24} 
-                                            color={APP_COLOR.GREY} 
-                                        />
-                                    </View>
+                                            <MaterialIcons
+                                                name="calendar-month"
+                                                size={24}
+                                                color={APP_COLOR.GREY}
+                                            />
+                                        </View>
                                     </Pressable>
 
                                     {isDatePickerVisible && (
