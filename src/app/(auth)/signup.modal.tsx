@@ -142,6 +142,14 @@ const SignUpModal = () => {
                                                 touched={touched.dob}
                                             />
                                         </View>
+
+                                        <View style={{ position: 'absolute', right: 15, top: 16 }}>
+                                        <MaterialIcons 
+                                            name="calendar-month" 
+                                            size={24} 
+                                            color={APP_COLOR.GREY} 
+                                        />
+                                    </View>
                                     </Pressable>
 
                                     {isDatePickerVisible && (

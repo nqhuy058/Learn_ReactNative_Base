@@ -7,6 +7,7 @@ import ShareButton from '../button/share.button';
 import { APP_COLOR } from '../../utils/constant';
 import { ThemeColors } from '../theme/themeContext';
 import { EditProfileSchema } from '../../utils/validate.chema';
+import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface EditProfileFormProps {
     user: any;
@@ -103,6 +104,14 @@ const EditProfileForm = ({ user, onSave, onCancel, colors }: EditProfileFormProp
                                 touched={touched.dob as boolean}
                                 returnKeyType="done"
                                 onSubmitEditing={handleSubmit as any}
+                            />
+                        </View>
+
+                        <View style={{ position: 'absolute', right: 15, top: 43}}>
+                            <MaterialIcons
+                                name="calendar-month"
+                                size={24}
+                                color={APP_COLOR.GREY}
                             />
                         </View>
                     </Pressable>
