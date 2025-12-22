@@ -10,10 +10,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import { resetPasswordApi } from "../../utils/api/api";
+import { forgotPasswordApi, resetPasswordApi } from "../../utils/api/api";
 
 const ForgotPasswordModal = () => {
     const [loading, setLoading] = useState(false);
+    const [countdown, setCountdown] = useState(0);
+
     const navigation = useNavigation<NativeStackNavigationProp<any>>();
     const route = useRoute<any>();
 
@@ -29,8 +31,18 @@ const ForgotPasswordModal = () => {
         }
     }, [email]);
 
+    useEffect(() => {
+        let timer: any;
+        if (countdown > 0) {
+            timer = setInterval(() => {
+                setCountdown((prev) => prev - 1);
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [countdown]);
+
     const handleConfirmCode = async (values: any) => {
-       setLoading(true);
+        setLoading(true);
         try {
             await resetPasswordApi({
                 email: email,
@@ -59,19 +71,28 @@ const ForgotPasswordModal = () => {
     };
 
     const handleResendCode = async () => {
-        Toast.show({
-            type: 'info',
-            text1: 'Đang gửi...',
-            text2: 'Đang gửi lại mã xác nhận...'
-        });
+        // Nếu đang đếm ngược thì chặn không cho bấm
+        if (countdown > 0) return;
 
-        setTimeout(() => {
+        try {
+            // Gọi API gửi lại mã
+            await forgotPasswordApi(email);
+
+            // Set đếm ngược 30s
+            setCountdown(30);
+
             Toast.show({
                 type: 'success',
                 text1: 'Thành công',
                 text2: `Đã gửi lại mã tới ${email}`
             });
-        }, 2000);
+        } catch (error: any) {
+            Toast.show({
+                type: 'error',
+                text1: 'Thất bại',
+                text2: error.response?.data?.message || 'Không thể gửi lại mã.'
+            });
+        }
     }
 
     return (
@@ -152,9 +173,20 @@ const ForgotPasswordModal = () => {
                                     </>
                                 )}
                             </Formik>
-
-                            <Pressable style={styles.resendContainer} onPress={handleResendCode}>
-                                <Text style={styles.resendText}>Gửi lại mã</Text>
+                            <Pressable
+                                style={({ pressed }) => ([
+                                    styles.resendContainer,
+                                    { opacity: pressed || countdown > 0 ? 0.5 : 1 }
+                                ])}
+                                onPress={handleResendCode}
+                                disabled={countdown > 0}
+                            >
+                                <Text style={[
+                                    styles.resendText,
+                                    countdown > 0 && { color: APP_COLOR.GREY }
+                                ]}>
+                                    {countdown > 0 ? `Gửi lại sau ${countdown}s` : 'Gửi lại mã'}
+                                </Text>
                             </Pressable>
                         </View>
                     </TouchableWithoutFeedback>
