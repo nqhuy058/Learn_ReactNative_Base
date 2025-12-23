@@ -4,9 +4,9 @@ import { Formik } from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ShareInput from '../input/share.input';
 import ShareButton from '../button/share.button';
-import { APP_COLOR } from '../../utils/constant';
+import { APP_COLOR } from '../../utils/constants/constant';
 import { ThemeColors } from '../theme/themeContext';
-import { EditProfileSchema } from '../../utils/validate.chema';
+import { EditProfileSchema } from '../../utils/validate/validate.chema';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface EditProfileFormProps {
@@ -107,7 +107,7 @@ const EditProfileForm = ({ user, onSave, onCancel, colors }: EditProfileFormProp
                             />
                         </View>
 
-                        <View style={{ position: 'absolute', right: 15, top: 43}}>
+                        <View style={{ position: 'absolute', right: 15, top: 43 }}>
                             <MaterialIcons
                                 name="calendar-month"
                                 size={24}

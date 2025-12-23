@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, Pressable, StyleProp, ViewStyle } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { APP_COLOR } from '../../utils/constant';
+import { APP_COLOR } from '../../utils/constants/constant';
 
 interface InforCardProps {
     icon: string;
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 14,
         borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0', 
+        borderBottomColor: '#f0f0f0',
     },
     leftContent: {
         flexDirection: 'row',

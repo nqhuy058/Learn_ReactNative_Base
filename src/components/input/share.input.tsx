@@ -1,4 +1,4 @@
-import { APP_COLOR } from '../../utils/constant';
+import { APP_COLOR } from '../../utils/constants/constant';
 import { FontAwesome } from '@react-native-vector-icons/fontawesome';
 import { forwardRef, useState } from "react";
 import { KeyboardTypeOptions, Platform, ReturnKeyTypeOptions, StyleProp, StyleSheet, Text, TextInput, View, ViewStyle } from "react-native";

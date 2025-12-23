@@ -3,7 +3,7 @@ import { View, StyleSheet, StatusBar, Image, ActivityIndicator, Keyboard, Platfo
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { debounce } from 'lodash';
 import useSWR, { SWRConfig } from 'swr';
-import { swrConfig } from '../../utils/swr-config';
+import { swrConfig } from '../../utils/config/swr-config';
 import Geolocation from 'react-native-geolocation-service';
 // Import API
 import { fetchLocations, fetchWeatherForecast } from '../../utils/api/weather.api';
@@ -109,7 +109,12 @@ const HomePageContent = () => {
     };
 
     useEffect(() => {
-        requestLocationPermission();
+        const timer = setTimeout(() => {
+            requestLocationPermission();
+        }, 1000);
+
+        // Clear timeout nếu component bị unmount đột ngột
+        return () => clearTimeout(timer);
     }, []);
 
     // Hàm xử lý khi kéo xuống

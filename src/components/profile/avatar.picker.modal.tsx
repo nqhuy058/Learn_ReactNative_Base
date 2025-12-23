@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Modal, Pressable, StyleSheet } from 'react-native';
 import ShareButton from '../button/share.button';
-import { APP_COLOR } from '../../utils/constant';
+import { APP_COLOR } from '../../utils/constants/constant';
 import { ThemeColors } from '../../components/theme/themeContext';
 
 interface AvatarPickerModalProps {

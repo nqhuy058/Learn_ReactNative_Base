@@ -1,13 +1,11 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getProfileApi } from "../utils/api/api"; 
-
+import StorageService from "../utils/storage/storage";
 // Định nghĩa kiểu dữ liệu User
 interface UserData {
     firstName: string;
     lastName: string;
     email: string;
-    password?: string; 
+    password?: string;
     dob?: string;
     createdAt?: string;
     avatar?: string;
@@ -37,21 +35,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = async () => {
         try {
-            await AsyncStorage.removeItem("access_token");
+            await StorageService.clear();
+            setUser(null);
         } catch (error) {
             console.log("Logout error", error);
         }
     };
 
     return (
-        <AppContext.Provider 
-            value={{ 
-                user, 
-                setUser, 
+        <AppContext.Provider
+            value={{
+                user,
+                setUser,
                 updateUser,
                 logout,
-                isLoggedIn: !!user, 
-                appLoading 
+                isLoggedIn: !!user,
+                appLoading
             }}
         >
             {children}

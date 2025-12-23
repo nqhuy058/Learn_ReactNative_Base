@@ -1,4 +1,4 @@
-import axiosClient from "../axios.client";
+import axiosClient from "./axios.client";
 
 export const registerApi = async (data: any) => {
     return await axiosClient.post('/register', data);

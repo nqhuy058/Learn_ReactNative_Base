@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
-import { weatherImages } from '../../utils/constant'; 
+import { weatherImages } from '../../utils/constants/constant';
 
 interface WeatherBodyProps {
     current: any;
     location: any;
-    forecast: any; 
+    forecast: any;
 }
 
 const WeatherBody: React.FC<WeatherBodyProps> = ({ current, location, forecast }) => {

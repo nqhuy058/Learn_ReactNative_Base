@@ -10,9 +10,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import ShareInput from '../../components/input/share.input';
 import ShareButton from '../../components/button/share.button';
-import { APP_COLOR } from '../../utils/constant';
+import { APP_COLOR } from '../../utils/constants/constant';
 import { verifyCodeApi, resendCodeApi } from '../../utils/api/api';
-import { VerifySchema } from '../../utils/validate.chema';
+import { VerifySchema } from '../../utils/validate/validate.chema';
 
 // Validate mã OTP phải đủ 6 số
 const VerifyModal = () => {
@@ -149,7 +149,7 @@ const VerifyModal = () => {
                                                 onPress={handleResendCode}
                                                 disabled={countdown > 0} // Vô hiệu hóa nút bấm
                                                 style={({ pressed }) => ({
-                                                    opacity: pressed ? 0.5 : 1 
+                                                    opacity: pressed ? 0.5 : 1
                                                 })}
                                             >
                                                 <Text style={[

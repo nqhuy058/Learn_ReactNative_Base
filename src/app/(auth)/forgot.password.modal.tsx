@@ -1,7 +1,7 @@
 import ShareButton from "../../components/button/share.button";
 import ShareInput from "../../components/input/share.input";
-import { APP_COLOR } from "../../utils/constant";
-import { ForgotPasswordSchema } from "../../utils/validate.chema";
+import { APP_COLOR } from "../../utils/constants/constant";
+import { ForgotPasswordSchema } from "../../utils/validate/validate.chema";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';

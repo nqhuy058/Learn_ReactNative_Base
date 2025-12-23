@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Image, Pressable, StyleSheet } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import UserAvatar from '../avatar/user.avatar';
-import { APP_COLOR } from '../../utils/constant';
+import { APP_COLOR } from '../../utils/constants/constant';
 import { ThemeColors } from '../../components/theme/themeContext';
 
 interface AvatarSectionProps {

@@ -1,7 +1,7 @@
 import ShareButton from "../../components/button/share.button";
 import ShareInput from "../../components/input/share.input";
-import { APP_COLOR } from "../../utils/constant";
-import { SignUpSchema } from "../../utils/validate.chema";
+import { APP_COLOR } from "../../utils/constants/constant";
+import { SignUpSchema } from "../../utils/validate/validate.chema";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Formik } from 'formik';
 import React, { useRef, useState } from 'react';

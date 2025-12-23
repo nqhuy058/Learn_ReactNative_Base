@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Switch } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import InforCard from '../card/infor.card';
 import ShareButton from '../button/share.button';
-import { APP_COLOR } from '../../utils/constant';
+import { APP_COLOR } from '../../utils/constants/constant';
 import { ThemeColors } from '../theme/themeContext';
 
 interface ProfileMenuProps {

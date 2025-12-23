@@ -1,7 +1,7 @@
 import ShareButton from "../../components/button/share.button";
 import ShareInput from "../../components/input/share.input";
-import { APP_COLOR } from "../../utils/constant";
-import { LoginSchema } from "../../utils/validate.chema";
+import { APP_COLOR } from "../../utils/constants/constant";
+import { LoginSchema } from "../../utils/validate/validate.chema";
 import { Formik } from "formik";
 import { useRef, useState } from "react";
 import { useNavigation } from '@react-navigation/native';
@@ -23,7 +23,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { useAppContext } from "../../context/app.context";
 import { loginApi, resendCodeApi } from "../../utils/api/api";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import StorageService, { StorageKeys } from "../../utils/storage/storage";
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
@@ -45,8 +45,8 @@ const LoginPage = () => {
             if (res && res.data) {
                 const { token, user } = res.data;
 
-                //Lưu Token vào bộ nhớ máy (để các API sau tự động gắn vào header)
-                await AsyncStorage.setItem('access_token', token);
+                //Lưu Token vào bộ nhớ máy 
+                await StorageService.setItem(StorageKeys.ACCESS_TOKEN, token);
 
                 //Cập nhật thông tin User vào Context toàn cục
                 setUser(user);

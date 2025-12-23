@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { APP_COLOR } from '../../utils//constant';
+import { APP_COLOR } from '../../utils/constants/constant';
 
 type ThemeType = 'light' | 'dark';
 
@@ -41,15 +41,15 @@ const lightColors: ThemeColors = {
 };
 
 const darkColors: ThemeColors = {
-    background: '#000000',      
-    text: '#F2F2F7',             
-    subText: '#8E8E93',          
-    primary: '#0A84FF',         
+    background: '#000000',
+    text: '#F2F2F7',
+    subText: '#8E8E93',
+    primary: '#0A84FF',
     secondary: '#303030',
-    border: '#38383A',         
-    card: '#1C1C1E',            
+    border: '#38383A',
+    card: '#1C1C1E',
     buttonText: '#FFFFFF',
-    inputBackground: '#2C2C2E', 
+    inputBackground: '#2C2C2E',
     placeholder: '#636366'
 };
 
