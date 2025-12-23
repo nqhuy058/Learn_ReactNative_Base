@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, StatusBar, Image, ActivityIndicator, Keyboard, Platform, PermissionsAndroid, Text } from 'react-native';
+import { View, StyleSheet, StatusBar, Image, ActivityIndicator, Keyboard, Platform, PermissionsAndroid, Text, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { debounce } from 'lodash';
 import useSWR, { SWRConfig } from 'swr';
@@ -40,7 +40,13 @@ const HomePageContent = () => {
 
     // Tham số thứ 1: Key (nếu key null, SWR sẽ tạm dừng). Khi key thay đổi, SWR tự gọi lại.
     // Tham số thứ 2: Hàm fetcher
-    const { data: weather, error, isLoading, mutate } = useSWR<WeatherData>(
+    const {
+        data: weather,
+        error,
+        isLoading,
+        isValidating, // Trạng thái đang load lại 
+        mutate        // Hàm kích hoạt load lại
+    } = useSWR<WeatherData>(
         currentQuery,
         weatherFetcher
     );
@@ -66,12 +72,10 @@ const HomePageContent = () => {
         Geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-                console.log(`📍 Đã lấy được tọa độ: ${latitude}, ${longitude}`);
                 // Cập nhật query -> SWR sẽ tự động chạy fetcher
                 setCurrentQuery(`${latitude},${longitude}`);
             },
             (error) => {
-                console.log("❌ Lỗi lấy vị trí:", error.code, error.message);
                 setCurrentQuery('Hanoi'); // Fallback
             },
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
@@ -108,6 +112,10 @@ const HomePageContent = () => {
         requestLocationPermission();
     }, []);
 
+    // Hàm xử lý khi kéo xuống
+    const onRefresh = useCallback(() => {
+        mutate(); // Gọi hàm này để SWR fetch lại dữ liệu mới nhất
+    }, [mutate]);
 
     const { current, location, forecast } = weather || {};
 
@@ -128,21 +136,33 @@ const HomePageContent = () => {
                 </View>
             ) : (
                 <SafeAreaView style={styles.safeArea}>
-                    <WeatherHeader
-                        showSearch={showSearch}
-                        toggleSearch={toggleSearch}
-                        locations={locations}
-                        handleTextDebounce={handleTextDebounce}
-                        handleLocation={handleLocation}
-                    />
+                    <ScrollView
+                        contentContainerStyle={{ flexGrow: 1 }}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={isValidating} // Xoay khi đang revalidate
+                                onRefresh={onRefresh}     // Kéo xuống thì gọi mutate
+                                tintColor="#fff"          // Màu vòng quay (iOS)
+                                colors={['#2196F3']}      // Màu vòng quay (Android)
+                            />
+                        }
+                    >
+                        <WeatherHeader
+                            showSearch={showSearch}
+                            toggleSearch={toggleSearch}
+                            locations={locations}
+                            handleTextDebounce={handleTextDebounce}
+                            handleLocation={handleLocation}
+                        />
 
-                    {error && <Text style={{ color: 'white', textAlign: 'center' }}>Lỗi tải dữ liệu</Text>}
+                        {error && <Text style={{ color: 'white', textAlign: 'center' }}>Lỗi tải dữ liệu</Text>}
 
-                    {current ? (
-                        <WeatherBody current={current} location={location} forecast={forecast} />
-                    ) : null}
+                        {current ? (
+                            <WeatherBody current={current} location={location} forecast={forecast} />
+                        ) : null}
 
-                    {forecast && <WeatherFooter forecast={forecast} />}
+                        {forecast && <WeatherFooter forecast={forecast} />}
+                    </ScrollView>
                 </SafeAreaView>
             )}
         </View>

@@ -9,7 +9,7 @@ import AvatarSection from '../../components/profile/avatar.section';
 import AvatarPickerModal from '../../components/profile/avatar.picker.modal';
 import EditProfileForm from '../../components/profile/profile.edit';
 import ProfileMenu from '../../components/profile/profile.menu';
-import { updateProfileApi } from '../../utils/api/api'; // <--- Import API
+import { updateProfileApi } from '../../utils/api/api';
 
 const ProfileScreen = ({ navigation }: any) => {
   const { user, setUser, logout } = useAppContext();
