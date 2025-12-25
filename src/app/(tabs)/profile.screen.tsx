@@ -30,7 +30,7 @@ const ProfileScreen = ({ navigation }: any) => {
   const handleSaveProfile = async (values: any) => {
     setIsLoading(true);
     try {
-      // Gọi API cập nhật
+      // Gọi API cập nhật a
       const res = await updateProfileApi({
         firstName: values.firstName,
         lastName: values.lastName,
