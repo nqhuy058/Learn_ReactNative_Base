@@ -146,13 +146,15 @@ const EditProfileForm = ({ user, onSave, onCancel, colors }: EditProfileFormProp
                         <ShareButton
                             tittle="Lưu"
                             onPress={() => handleSubmit()}
-                            btnStyle={[styles.button, styles.saveButton]}
-                            textStyle={styles.buttonText}
+                            backgroundColor={APP_COLOR.BLUE_LIGHT}
+                            textStyle={{ fontWeight: 'bold', }}
                         />
                         <ShareButton
                             tittle="Hủy"
                             onPress={onCancel}
-                            btnStyle={[styles.button, styles.cancelButton]}
+                            backgroundColor={colors.card}
+                            borderWidth={1}
+                            borderColor={colors.border}
                             textStyle={[styles.buttonText, styles.cancelButtonText]}
                         />
                     </View>
@@ -192,14 +194,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 50,
         borderRadius: 12
-    },
-    saveButton: {
-        backgroundColor: APP_COLOR.BLUE_LIGHT
-    },
-    cancelButton: {
-        backgroundColor: colors.card,
-        borderWidth: 1,
-        borderColor: colors.border
     },
     buttonText: {
         fontSize: 14,

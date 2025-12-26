@@ -1,51 +1,58 @@
-import { ReactNode } from "react";
-import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
+import React from "react";
+import { StyleProp, TextStyle } from "react-native";
+import { Button, Text, Spinner, ButtonProps } from "tamagui";
 
-const styles = StyleSheet.create({
-    btnContainer: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 8,
-    },
-    text: {
-        fontSize: 16,
-        fontWeight: "600",
-    }
-})
-
-interface IProps {
+// Kế thừa ButtonProps của Tamagui
+interface IProps extends ButtonProps {
     tittle: string;
     onPress: () => void;
-    textStyle?: StyleProp<TextStyle>;
-    pressStyle?: StyleProp<ViewStyle>;
-    btnStyle?: StyleProp<ViewStyle>;
-    icons?: ReactNode;
+    icons?: any;
     loading?: boolean;
+    textStyle?: StyleProp<TextStyle>;
 }
 
 const ShareButton = (props: IProps) => {
-    const { tittle, onPress, textStyle,
-        pressStyle, btnStyle,
-        icons, loading = false, 
+    const {
+        tittle,
+        onPress,
+        icons,
+        loading = false,
+        textStyle,
+        backgroundColor,
+        bg,
+        ...rest
     } = props;
-    
+
+    const activeBg = backgroundColor || bg || undefined;
+
     return (
-        <Pressable
+        <Button
             onPress={onPress}
-            style={({ pressed }) => [
-                { opacity: pressed ? 0.7 : 1 },
-                pressStyle
-            ]}
+            disabled={loading}
+            flexDirection="row"
+            justifyContent="center"
+            alignItems="center"
+            gap="$2"
+            paddingVertical="$2"
+            borderRadius="$6"
+            backgroundColor={activeBg}
+            pressStyle={{
+                opacity: 0.8,
+                backgroundColor: activeBg,
+                borderWidth: 0 // Đảm bảo không bị viền lạ khi nhấn
+            }}
+            icon={loading ? <Spinner color="$color" /> : icons}
+            {...rest}
         >
-            <View style={[styles.btnContainer, btnStyle]}>
-                {loading && <ActivityIndicator color={"black"} />}
-                {icons}
-                <Text style={[styles.text, textStyle]}>
-                    {tittle}
-                </Text>
-            </View>
-        </Pressable>
+            <Text
+                fontSize={16}
+                fontWeight="600"
+                color={"$color"}
+                style={textStyle}
+            >
+                {tittle}
+            </Text>
+        </Button>
     )
 }
 

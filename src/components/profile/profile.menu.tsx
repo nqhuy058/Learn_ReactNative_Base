@@ -48,7 +48,12 @@ const ProfileMenu = ({ user, onEditPress, isDarkTheme, toggleTheme, onLogout, co
                 </View>
             </View>
 
-            <ShareButton tittle="Đăng xuất" onPress={onLogout} btnStyle={styles.logoutButton} textStyle={styles.logoutButtonText} />
+            <ShareButton
+                tittle="Đăng xuất"
+                onPress={onLogout}
+                backgroundColor={APP_COLOR.BLUE_LIGHT}
+                textStyle={{ fontWeight: 'bold', }}
+            />
         </View>
     );
 };
@@ -86,22 +91,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         borderTopWidth: 1,
         borderTopColor: colors.border,
         backgroundColor: colors.card
-    },
-    logoutButton: {
-        backgroundColor: 'transparent',
-        borderRadius: 15,
-        paddingVertical: 12,
-        marginBottom: 24,
-        width: '70%',
-        alignSelf: 'center',
-        borderWidth: 1,
-        borderColor: APP_COLOR.BLUE_LIGHT
-    },
-    logoutButtonText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: APP_COLOR.BLUE_LIGHT,
-        textAlign: 'center'
     },
 });
 

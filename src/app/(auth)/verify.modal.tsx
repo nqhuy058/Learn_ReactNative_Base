@@ -139,8 +139,8 @@ const VerifyModal = () => {
                                             tittle="Xác nhận"
                                             onPress={handleSubmit as any}
                                             loading={loading}
-                                            btnStyle={styles.verifyButton}
-                                            textStyle={styles.verifyButtonText}
+                                            backgroundColor={APP_COLOR.BLUE_LIGHT}
+                                            textStyle={{ fontWeight: 'bold', }}
                                         />
 
                                         <View style={styles.resendContainer}>
@@ -201,17 +201,7 @@ const styles = StyleSheet.create({
     formContainer: {
         flex: 1,
     },
-    verifyButton: {
-        marginTop: 30,
-        backgroundColor: APP_COLOR.BLUE_LIGHT,
-        borderRadius: 25,
-        paddingVertical: 12,
-    },
-    verifyButtonText: {
-        color: APP_COLOR.WHITE,
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
+    
     resendContainer: {
         flexDirection: 'row',
         justifyContent: 'center',

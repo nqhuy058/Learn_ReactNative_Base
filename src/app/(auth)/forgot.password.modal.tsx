@@ -167,8 +167,8 @@ const ForgotPasswordModal = () => {
                                             tittle="Tiếp tục"
                                             onPress={handleSubmit as any}
                                             loading={loading}
-                                            btnStyle={styles.button}
-                                            textStyle={styles.buttonText}
+                                            backgroundColor={APP_COLOR.BLUE_LIGHT}
+                                            textStyle={{ fontWeight: 'bold', }}
                                         />
                                     </>
                                 )}
@@ -229,23 +229,13 @@ const styles = StyleSheet.create({
         marginBottom: 24,
         lineHeight: 22,
     },
-    button: {
-        backgroundColor: APP_COLOR.BLUE_LIGHT,
-        borderRadius: 25,
-        paddingVertical: 14,
-        marginTop: 16,
-    },
-    buttonText: {
-        color: APP_COLOR.WHITE,
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
+    
     resendContainer: {
         marginTop: 24,
         alignItems: 'center',
     },
     resendText: {
-        color: APP_COLOR.BLUE_LIGHT,
+        color: APP_COLOR.GREY,
         fontWeight: 'bold',
         fontSize: 15,
     }

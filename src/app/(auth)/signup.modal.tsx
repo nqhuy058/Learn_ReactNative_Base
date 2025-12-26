@@ -214,8 +214,8 @@ const SignUpModal = () => {
                                         tittle="Tạo tài khoản"
                                         onPress={handleSubmit as any}
                                         loading={loading}
-                                        btnStyle={styles.button}
-                                        textStyle={styles.buttonText}
+                                        backgroundColor={APP_COLOR.BLUE_LIGHT}
+                                        textStyle={{ fontWeight: 'bold', }}
                                     />
                                 </View>
                             </TouchableWithoutFeedback>
@@ -264,17 +264,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 16
     },
-    button: {
-        backgroundColor: APP_COLOR.BLUE_LIGHT,
-        borderRadius: 25,
-        paddingVertical: 14,
-        marginTop: 16
-    },
-    buttonText: {
-        color: APP_COLOR.WHITE,
-        fontWeight: 'bold',
-        fontSize: 16
-    }
+
 });
 
 export default SignUpModal;

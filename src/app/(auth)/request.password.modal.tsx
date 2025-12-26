@@ -79,8 +79,8 @@ const RequestPasswordModal = () => {
                                             tittle="Tiếp tục"
                                             onPress={handleSubmit as any}
                                             loading={loading}
-                                            btnStyle={styles.button}
-                                            textStyle={styles.buttonText}
+                                            backgroundColor={APP_COLOR.BLUE_LIGHT}
+                                            textStyle={{ fontWeight: 'bold', }}
                                         />
                                     </>
                                 )}
@@ -124,17 +124,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: APP_COLOR.GREY,
         marginBottom: 24,
-    },
-    button: {
-        backgroundColor: APP_COLOR.BLUE_LIGHT,
-        borderRadius: 25,
-        paddingVertical: 14,
-        marginTop: 16,
-    },
-    buttonText: {
-        color: APP_COLOR.WHITE,
-        fontWeight: 'bold',
-        fontSize: 16,
     },
 });
 

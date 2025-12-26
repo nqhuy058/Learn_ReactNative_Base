@@ -142,16 +142,11 @@ const LoginPage = () => {
                                                 loading={loading}
                                                 tittle="Đăng nhập"
                                                 onPress={handleSubmit as any}
+                                                backgroundColor={APP_COLOR.BLUE_LIGHT}
                                                 textStyle={{
                                                     color: APP_COLOR.WHITE,
                                                     fontSize: 16,
                                                     fontWeight: 'bold',
-                                                }}
-                                                btnStyle={{
-                                                    backgroundColor: APP_COLOR.BLUE_LIGHT,
-                                                    borderRadius: 25,
-                                                    paddingVertical: 12,
-                                                    marginTop: 8
                                                 }}
                                             />
                                             <Pressable
