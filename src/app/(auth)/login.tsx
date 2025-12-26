@@ -144,8 +144,6 @@ const LoginPage = () => {
                                                 onPress={handleSubmit as any}
                                                 backgroundColor={APP_COLOR.BLUE_LIGHT}
                                                 textStyle={{
-                                                    color: APP_COLOR.WHITE,
-                                                    fontSize: 16,
                                                     fontWeight: 'bold',
                                                 }}
                                             />
