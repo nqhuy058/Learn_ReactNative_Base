@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, Switch } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Switch, Pressable, Modal } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import QRCode from 'react-native-qrcode-svg';
 import InforCard from '../card/infor.card';
 import ShareButton from '../button/share.button';
 import { APP_COLOR } from '../../utils/constants/constant';
@@ -17,10 +18,33 @@ interface ProfileMenuProps {
 
 const ProfileMenu = ({ user, onEditPress, isDarkTheme, toggleTheme, onLogout, colors }: ProfileMenuProps) => {
     const styles = createStyles(colors);
+    const [isQrModalVisible, setQrModalVisible] = useState(false);
+    const [qrData, setQrData] = useState('');
 
     return (
         <View>
             <View style={styles.userNameSection}>
+                <Pressable
+                    style={styles.qrIconBtn}
+                    onPress={() => {
+                        // Lấy thông tin từ props user
+                        const userData = {
+                            firstName: user?.firstName,
+                            lastName: user?.lastName,
+                            email: user?.email,
+                            dob: user?.dob,
+                        };
+                        setQrData(JSON.stringify(userData));
+                        setQrModalVisible(true);
+                    }}
+                >
+                    <MaterialIcons
+                        name="qrcode-scan"
+                        size={24}
+                        color={colors.text} // Icon đổi màu theo theme
+                    />
+                </Pressable>
+
                 <View style={{ alignItems: 'center' }}>
                     <Text style={styles.userName}>{user.firstName} {user.lastName}</Text>
                     <Text style={styles.userEmail}>{user.email}</Text>
@@ -52,8 +76,50 @@ const ProfileMenu = ({ user, onEditPress, isDarkTheme, toggleTheme, onLogout, co
                 tittle="Đăng xuất"
                 onPress={onLogout}
                 backgroundColor={APP_COLOR.BLUE_LIGHT}
-                textStyle={{ fontWeight: 'bold', }}
+                textStyle={{ fontWeight: 'bold' }}
             />
+
+            <Modal
+                transparent={true}
+                visible={isQrModalVisible}
+                onRequestClose={() => setQrModalVisible(false)}
+            >
+                <Pressable
+                    style={styles.modalOverlay}
+                    onPress={() => setQrModalVisible(false)}
+                >
+                    <Pressable
+                        style={styles.modalContent}
+                        onPress={(e) => e.stopPropagation()}
+                    >
+                        <Text style={styles.modalTitle}>Mã QR Cá Nhân</Text>
+
+                        <View style={styles.qrContainer}>
+                            {qrData ? (
+                                <QRCode
+                                    value={qrData}
+                                    size={180}
+                                    color="black"
+                                    backgroundColor="white"
+                                />
+                            ) : (
+                                <Text>Không có dữ liệu</Text>
+                            )}
+                        </View>
+
+                        <Text style={styles.modalNote}>Quét mã để chia sẻ thông tin</Text>
+
+                        <ShareButton
+                            tittle="Đóng"
+                            onPress={() => setQrModalVisible(false)}
+                            backgroundColor={APP_COLOR.BLUE_LIGHT}
+                            textStyle={{ fontWeight: 'bold', color: 'white' }}
+                            width='50%'
+                            marginTop={10}
+                        />
+                    </Pressable>
+                </Pressable>
+            </Modal>
         </View>
     );
 };
@@ -63,17 +129,28 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 24
+        marginBottom: 24,
+        position: 'relative', // Để định vị icon QR
+        minHeight: 50, // Đảm bảo đủ chiều cao cho icon
+    },
+    qrIconBtn: {
+        position: 'absolute',
+        right: 0, // Sát lề phải
+        top: 0,   // Sát lề trên (hoặc chỉnh top: 10 nếu muốn thấp xuống)
+        padding: 8, // Tăng vùng bấm
+        zIndex: 1,
     },
     userName: {
         fontSize: 24,
         fontWeight: 'bold',
         color: colors.text,
-        marginBottom: 4
+        marginBottom: 4,
+        textAlign: 'center'
     },
     userEmail: {
         fontSize: 14,
-        color: colors.subText
+        color: colors.subText,
+        textAlign: 'center'
     },
     menuSection: {
         marginBottom: 24,
@@ -92,6 +169,47 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         borderTopColor: colors.border,
         backgroundColor: colors.card
     },
+    
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        width: 300,
+        backgroundColor: colors.card,
+        borderRadius: 20,
+        padding: 24,
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        borderWidth: 1,
+        borderColor: colors.border,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        color: colors.text,
+        textAlign: 'center',
+    },
+    qrContainer: {
+        padding: 15,
+        backgroundColor: 'white',
+        borderRadius: 15,
+        marginBottom: 15,
+        elevation: 2,
+    },
+    modalNote: {
+        fontSize: 12,
+        color: colors.subText,
+        marginBottom: 20,
+        textAlign: 'center',
+    }
 });
 
 export default ProfileMenu;
